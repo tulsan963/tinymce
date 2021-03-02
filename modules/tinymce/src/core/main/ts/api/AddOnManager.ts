@@ -353,5 +353,6 @@ AddOnManager.languageLoad = true;
 AddOnManager.baseURL = '';
 AddOnManager.PluginManager = AddOnManager<any>();
 AddOnManager.ThemeManager = AddOnManager<any>();
+AddOnManager.ModelManager = AddOnManager<any>();
 
 export default AddOnManager;
