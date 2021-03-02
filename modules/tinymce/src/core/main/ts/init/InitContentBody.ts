@@ -327,8 +327,6 @@ const preInit = (editor: Editor, rtcMode: boolean) => {
     DOM.setAttrib(body, 'spellcheck', 'false');
   }
 
-  initModel(editor);
-
   editor.quirks = Quirks(editor);
 
   Events.firePostRender(editor);
@@ -467,8 +465,8 @@ const initContentBody = (editor: Editor, skipWrite?: boolean) => {
 
   Events.firePreInit(editor);
 
-
   Rtc.setup(editor).fold(() => {
+    initModel(editor);
     preInit(editor, false);
   }, (loadingRtc) => {
     editor.setProgressState(true);

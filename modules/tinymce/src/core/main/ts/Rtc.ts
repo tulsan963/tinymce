@@ -8,6 +8,7 @@
 import { Cell, Fun, Obj, Optional, Type } from '@ephox/katamari';
 import Editor from './api/Editor';
 import Formatter from './api/Formatter';
+import { Model } from './api/ModelManager';
 import Promise from './api/util/Promise';
 import { Content, ContentFormat, GetContentArgs, SetContentArgs } from './content/ContentTypes';
 import { getContentInternal } from './content/GetContentImpl';
@@ -55,6 +56,7 @@ interface RtcRuntimeApi {
     getContent: (args: GetSelectionContentArgs) => Content;
   };
   raw: {
+    getSharedModelApi: () => Model;
     getRawModel: () => any;
   };
   rtc: {
@@ -260,6 +262,7 @@ export const setup = (editor: Editor): Optional<Promise<boolean>> => {
     },
     (rtc) => Optional.some(
       rtc.setup().then((rtcEditor) => {
+        editorCast.model = rtcEditor.raw.getSharedModelApi();
         editorCast.rtcInstance = makeRtcAdaptor(rtcEditor);
         return rtcEditor.rtc.isRemote;
       }, (err) => {
