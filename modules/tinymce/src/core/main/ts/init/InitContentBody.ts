@@ -20,7 +20,6 @@ import Formatter from '../api/Formatter';
 import DomParser, { DomParserSettings } from '../api/html/DomParser';
 import AstNode from '../api/html/Node';
 import Schema from '../api/html/Schema';
-import ModelManager from '../api/ModelManager';
 import * as Settings from '../api/Settings';
 import UndoManager from '../api/UndoManager';
 import Delay from '../api/util/Delay';
@@ -310,15 +309,6 @@ const loadContentCss = (editor: Editor, css: string[]) => {
   Promise.all(makeStylesheetLoadingPromises(editor, css, fontCss)).then(loaded).catch(loaded);
 };
 
-const initModel = (editor: Editor) => {
-  const modelSetting = Settings.getModel(editor);
-
-  const model = Type.isString(modelSetting) ? modelSetting : 'dom';
-
-  const Model = ModelManager.get(model);
-  editor.model = new Model(editor, ModelManager.urls[model]);
-};
-
 const preInit = (editor: Editor, rtcMode: boolean) => {
   const settings = editor.settings, doc = editor.getDoc(), body = editor.getBody();
 
@@ -466,7 +456,6 @@ const initContentBody = (editor: Editor, skipWrite?: boolean) => {
   Events.firePreInit(editor);
 
   Rtc.setup(editor).fold(() => {
-    initModel(editor);
     preInit(editor, false);
   }, (loadingRtc) => {
     editor.setProgressState(true);
