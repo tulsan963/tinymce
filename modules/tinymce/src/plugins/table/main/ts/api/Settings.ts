@@ -15,7 +15,7 @@ export interface StringMap {
 type ClassList = Array<{title: string; value: string}>;
 type TableSizingMode = 'fixed' | 'relative' | 'responsive' | 'auto';
 
-const defaultTableToolbar = 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol';
+const defaultTableToolbar = 'table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol';
 
 const defaultStyles = {
   'border-collapse': 'collapse',

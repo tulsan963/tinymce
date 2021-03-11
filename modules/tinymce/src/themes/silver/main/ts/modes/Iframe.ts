@@ -94,6 +94,8 @@ const render = (editor: Editor, uiComponents: RenderUiComponents, rawUiConfig: R
   Attachment.attachSystem(uiRoot, uiComponents.uiMothership);
 
   editor.on('PostRender', () => {
+    Attachment.attachSystem(SugarElement.fromDom(editor.getContentAreaContainer()), uiComponents.uiInlineMothership);
+
     setToolbar(editor, uiComponents, rawUiConfig, backstage);
     lastToolbarWidth.set(editor.getWin().innerWidth);
 

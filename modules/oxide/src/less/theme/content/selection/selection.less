@@ -10,9 +10,8 @@
 //
 
 @document-selection-color: initial;
-@table-selection-color: fade(#b4d7ff, 70%);
-@table-selection-border-color: @table-selection-color;
-@table-selection-blend-mode: multiply;
+@table-selection-color: #f2f8ff;
+@table-selection-border-color: #007aff;
 @object-block-selected-color: #b4d7ff;
 @object-block-selected-outline-width: 3px;
 
@@ -27,8 +26,9 @@
   video[data-mce-selected],
   audio[data-mce-selected],
   object[data-mce-selected],
-  embed[data-mce-selected],
-  table[data-mce-selected] {
+  embed[data-mce-selected] {
+    // TODO: This should only be removed whenever the new table UI isn't in use. How? Override this content css?
+    // table[data-mce-selected] {
     outline: @object-block-selected-outline-width solid @object-block-selected-color;
   }
 
@@ -86,23 +86,37 @@
     }
   }
 
-  // Apply cell selection as a semi-transparent overlay instead of manipulating the cell background itself
-  td[data-mce-selected]::after,
-  th[data-mce-selected]::after {
-    background-color: @table-selection-color;
-    border: 1px solid @table-selection-border-color;
+  .mce-table-overlay {
     bottom: -1px;
     content: '';
     left: -1px;
-    mix-blend-mode: @table-selection-blend-mode;
     position: absolute;
     right: -1px;
     top: -1px;
+  }
 
-    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-      // Provide a darker border color for IE11
-      border-color: darken(@table-selection-color, 50%);
-    }
+  // Apply cell selection as a semi-transparent overlay instead of manipulating the cell background itself
+  td[data-mce-selected]:not([data-mce-first-selected][data-mce-last-selected])::before,
+  th[data-mce-selected]:not([data-mce-first-selected][data-mce-last-selected])::before {
+    .mce-table-overlay;
+
+    border: 1px solid @table-selection-border-color;
+  }
+
+  td[data-mce-selected]:not([data-mce-first-selected][data-mce-last-selected])::after,
+  th[data-mce-selected]:not([data-mce-first-selected][data-mce-last-selected])::after {
+    .mce-table-overlay;
+
+    background-color: @table-selection-color;
+    z-index: -1;
+  }
+
+  td[data-mce-selected][data-mce-first-selected][data-mce-last-selected]::after,
+  th[data-mce-selected][data-mce-first-selected][data-mce-last-selected]::after {
+    .mce-table-overlay;
+
+    box-shadow: inset 0 0 0 2px #b4d7ff;
+    z-index: -1;
   }
 
   img::selection {
@@ -112,12 +126,16 @@
 
 // Table border resizing handles
 .ephox-snooker-resizer-bar {
-  background-color: @object-block-selected-color;
+  background-color: #007aff; // TODO: Probably use this for the default table mode as well
   opacity: 0;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .ephox-snooker-resizer-cols {

@@ -1,0 +1,93 @@
+//
+// Copyright (c) Tiny Technologies, Inc. All rights reserved.
+// Licensed under the LGPL or a commercial license.
+// For LGPL see License.txt in the project root for license information.
+// For commercial licenses see https://www.tiny.cloud/
+//
+
+//
+// Table
+//
+
+@table-color: #ccc;
+@table-selection-color: #007aff;
+@table-size: 10px;
+@table-active-size: 13px;
+
+.tox {
+  // Common
+  .tox-table-selection-handle {
+    border-color: @table-color;
+    border-style: solid;
+    display: flex;
+
+    &:hover {
+      background: @table-selection-color;
+    }
+  }
+
+  .tox-table-selection-handle--active {
+    align-items: center;
+    background: @table-selection-color;
+    border-color: @table-selection-color;
+    border-style: solid;
+  }
+
+  // Row
+  .tox-table-row-selection-handle {
+    .tox-table-selection-handle;
+
+    // border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-width: 1px;
+    width: @table-size;
+  }
+
+  .tox-table-row-selection-handle--active {
+    .tox-table-selection-handle--active;
+
+    justify-content: center;
+    width: @table-active-size;
+  }
+
+  // Col
+  .tox-table-col-selection-handle {
+    .tox-table-selection-handle;
+
+    // border-right-width: 1px;
+    border-bottom-width: 1px; // For when the top bar will dock, need a border bottom?
+    border-left-width: 1px;
+    border-top-width: 1px;
+    height: @table-size;
+  }
+
+  .tox-table-col-selection-handle--active {
+    .tox-table-selection-handle--active;
+
+    height: @table-active-size;
+    justify-content: flex-end;
+  }
+
+  // RowCol
+  .tox-table-rowcol-selection-handle {
+    .tox-table-row-selection-handle;
+    .tox-table-col-selection-handle;
+  }
+
+  .tox-table-rowcol-selection-handle--active {
+    .tox-table-row-selection-handle--active;
+    .tox-table-col-selection-handle--active;
+
+    justify-content: center;
+  }
+
+  .tox-table-cell-handle {
+    align-items: center;
+    background: @table-selection-color;
+    border-radius: 0 3px 3px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: @table-active-size;
+  }
+}

@@ -1,8 +1,8 @@
 declare let tinymce: any;
 
-tinymce.init({
+const settings = {
   selector: 'div.tinymce',
-  plugins: 'table',
+  plugins: 'table code searchreplace',
   toolbar: 'table tableprops tablecellprops tablerowprops | tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | tablecutrow tablecopyrow tablepasterowbefore tablepasterowafter',
   media_dimensions: false,
   table_class_list: [
@@ -33,8 +33,14 @@ tinymce.init({
   // resolve({
   //   html: '<iframe src="' + data.url + '" width="560" height="314" allowfullscreen="allowfullscreen"></iframe>'});
   // },
-  height: 600,
-  content_style: 'td[data-mce-selected], th[data-mce-selected] { background-color: #2276d2 !important; }' + '.cat { border-color: green; color: red; background-color: }'
-});
+  // height: 1600,
+  height: 700,
+  // content_style: 'td[data-mce-selected], th[data-mce-selected] { background-color: #2276d2 !important; }' + '.cat { border-color: green; color: red; background-color: }'
+  // content_style: 'table { border-collapse: unset !important; }'
+  content_style: 'body { padding: 30px; }'
+};
+
+tinymce.init(settings);
+tinymce.init({ ...settings, selector: 'div.tinymce-inline', inline: true });
 
 export {};

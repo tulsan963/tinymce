@@ -12,7 +12,7 @@ import Editor from 'tinymce/core/api/Editor';
 import { AfterProgressStateEvent } from 'tinymce/core/api/EventTypes';
 import { EditorEvent } from 'tinymce/core/api/util/EventDispatcher';
 
-const setup = (editor: Editor, mothership: Gui.GuiSystem, uiMothership: Gui.GuiSystem) => {
+const setup = (editor: Editor, mothership: Gui.GuiSystem, uiMothership: Gui.GuiSystem, uiInlineMothership: Gui.GuiSystem) => {
   const broadcastEvent = (name: string, evt: EventArgs) => {
     Arr.each([ mothership, uiMothership ], (ship) => {
       ship.broadcastEvent(name, evt);
@@ -20,7 +20,7 @@ const setup = (editor: Editor, mothership: Gui.GuiSystem, uiMothership: Gui.GuiS
   };
 
   const broadcastOn = (channel: string, message: Record<string, any>) => {
-    Arr.each([ mothership, uiMothership ], (ship) => {
+    Arr.each([ mothership, uiMothership, uiInlineMothership ], (ship) => {
       ship.broadcastOn([ channel ], message);
     });
   };
@@ -93,8 +93,10 @@ const setup = (editor: Editor, mothership: Gui.GuiSystem, uiMothership: Gui.GuiS
   editor.on('detach', () => {
     Attachment.detachSystem(mothership);
     Attachment.detachSystem(uiMothership);
+    Attachment.detachSystem(uiInlineMothership);
     mothership.destroy();
     uiMothership.destroy();
+    uiInlineMothership.destroy();
   });
 };
 

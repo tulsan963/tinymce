@@ -27,11 +27,15 @@ export const MouseSelection = (bridge: WindowBridge, container: SugarElement, is
           // Wait until we have more than one, otherwise you can't do text selection inside a cell.
           // Alternatively, if the one cell selection starts in one cell and ends in a different cell,
           // we can assume that the user is trying to make a one cell selection in two different tables which should be possible.
-          if (boxes.length > 1 || (boxes.length === 1 && !Compare.eq(start, finish))) {
+          // This should actually not need to be modified. A single cell in the new Table UI shouldn't
+          // actually need to be selected, it just needs the outline + cell button ???
+          if (boxes.length > 0 || (boxes.length === 1 && !Compare.eq(start, finish))) {
             annotations.selectRange(container, boxes, cellSel.start, cellSel.finish);
 
             // stop the browser from creating a big text selection, select the cell where the cursor is
-            bridge.selectContents(finish);
+            if (boxes.length !== 0) {
+              bridge.selectContents(finish);
+            }
           }
         });
       });

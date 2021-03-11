@@ -19,6 +19,7 @@ import * as Events from './Events';
 import * as Iframe from './modes/Iframe';
 import * as Inline from './modes/Inline';
 import * as ReadOnly from './ReadOnly';
+import { setupTableUi } from './Table';
 import * as FormatControls from './ui/core/FormatControls';
 import OuterContainer, { OuterContainerSketchSpec } from './ui/general/OuterContainer';
 import * as StaticHeader from './ui/header/StaticHeader';
@@ -54,6 +55,7 @@ export interface UiChannels {
 export interface RenderUiComponents {
   mothership: Gui.GuiSystem;
   uiMothership: Gui.GuiSystem;
+  uiInlineMothership: Gui.GuiSystem;
   outerContainer: AlloyComponent;
 }
 
@@ -145,7 +147,21 @@ const setup = (editor: Editor): RenderInfo => {
 
   const sink = GuiFactory.build(makeSinkDefinition());
 
+  const inlineSink = GuiFactory.build({
+    dom: {
+      tag: 'div',
+      classes: [ 'tox', 'tox-silver-sink', 'tox-tinymce-aux' ].concat(platformClasses).concat(deviceClasses),
+      ...dirAttributes
+    },
+    behaviours: Behaviour.derive([
+      Positioning.config({
+        useFixed: () => isHeaderDocked()
+      })
+    ])
+  });
+
   const lazySink = () => Result.value<AlloyComponent, Error>(sink);
+  const lazyInlineSink = () => Result.value<AlloyComponent, Error>(inlineSink);
 
   const memAnchorBar = Memento.record({
     dom: {
@@ -357,8 +373,9 @@ const setup = (editor: Editor): RenderInfo => {
   );
 
   const uiMothership = Gui.takeover(sink);
+  const uiInlineMothership = Gui.takeover(inlineSink);
 
-  Events.setup(editor, mothership, uiMothership);
+  Events.setup(editor, mothership, uiMothership, uiInlineMothership);
 
   const getUi = () => {
     const channels = {
@@ -426,10 +443,13 @@ const setup = (editor: Editor): RenderInfo => {
     const elm = editor.getElement();
     const height = setEditorSize();
 
-    const uiComponents: RenderUiComponents = { mothership, uiMothership, outerContainer };
+    const uiComponents: RenderUiComponents = { mothership, uiMothership, uiInlineMothership, outerContainer };
     const args: RenderArgs = { targetNode: elm, height };
     return mode.render(editor, uiComponents, rawUiConfig, backstage, args);
   };
+
+  setupTableUi(editor, lazyInlineSink, backstage.shared);
+  // setupFloat(editor, lazySink, backstage.shared);
 
   return { mothership, uiMothership, backstage, renderUI, getUi };
 };

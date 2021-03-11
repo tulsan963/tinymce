@@ -10,7 +10,7 @@ import * as BarPositions from './BarPositions';
 const resizeBar = Styles.resolve('resizer-bar');
 const resizeRowBar = Styles.resolve('resizer-rows');
 const resizeColBar = Styles.resolve('resizer-cols');
-const BAR_THICKNESS = 7;
+const BAR_THICKNESS = 2; // Would need to make the blue line contained in a wider div so that it's easier to select
 
 const resizableRows = (warehouse: Warehouse, isResizable: (elm: SugarElement<Element>) => boolean): number[] =>
   Arr.bind(warehouse.all, (row, i) => isResizable(row.element) ? [ i ] : []);
