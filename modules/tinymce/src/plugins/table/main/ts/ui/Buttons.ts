@@ -181,8 +181,8 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
     console.error('Missing table class list');
   } else {
     editor.ui.registry.addMenuButton('tableclass', {
-      text: 'Class List',
-      icon: 'table-class-list',
+      icon: 'table-classes',
+      tooltip: 'Table classes',
       fetch: (callback) => {
         callback(Arr.map(tableClassList, (value) => {
           const item: Menu.ToggleMenuItemSpec = {
@@ -196,7 +196,8 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
 
           return item;
         }));
-      }
+      },
+      onSetup: selectionTargets.onSetupTable
     });
   }
 
@@ -204,8 +205,8 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
 
   if (tableCellClassList.length !== 0) {
     editor.ui.registry.addMenuButton('tablecellclass', {
-      text: 'Cell Class List',
-      icon: 'table-cell-class-list',
+      icon: 'table-cell-classes',
+      tooltip: 'Cell classes',
       fetch: (callback) => {
         callback(Arr.map(tableCellClassList, (value) => {
           const item: Menu.ToggleMenuItemSpec = {
@@ -219,33 +220,32 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
 
           return item;
         }));
-      }
+      },
+      onSetup: selectionTargets.onSetupCellOrRow
     });
   }
 
   const alignTableButtons = [
     {
       name: 'tablecellvaligntop',
-      text: 'Align Top',
-      cmd: 'top',
-      icon: 'align-cell-top'
+      text: 'Top',
+      cmd: 'top'
     },
     {
       name: 'tablecellvaligncenter',
-      text: 'Align Center',
-      cmd: 'center',
-      icon: 'align-cell-center'
+      text: 'Center',
+      cmd: 'center'
     },
     {
       name: 'tablecellvalignbottom',
-      text: 'Align Bottom',
-      cmd: 'bottom',
-      icon: 'align-cell-bottom'
+      text: 'Bottom',
+      cmd: 'bottom'
     },
   ];
 
   editor.ui.registry.addMenuButton('tablecellvalign', {
-    icon: 'table-cell-valign',
+    icon: 'vertical-align',
+    tooltip: 'Vertical align',
     fetch: (callback) => {
       callback(Arr.map(alignTableButtons, (item): Menu.ToggleMenuItemSpec => {
         return {
@@ -256,25 +256,26 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
               'vertical-align': item.cmd
             });
           },
-          icon: item.icon,
           onSetup: onSetupToggle(editor, 'tablecellverticalalign', item.name)
         };
       }));
-    }
+    },
+    onSetup: selectionTargets.onSetupTable
   });
 
-  editor.ui.registry.addButton('tablecaption', {
-    tooltip: 'Toggle Table Caption',
+  editor.ui.registry.addToggleButton('tablecaption', {
+    tooltip: 'Table caption',
     onAction: () => {
       editor.execCommand('mceTableToggleCaption', false, true);
     },
-    icon: 'table-caption-toggle'
+    icon: 'table-caption',
+    onSetup: selectionTargets.onSetupTableWithCaption
   });
 
   const tableCellBackgroundColors = getTableCellBackgroundColors(editor);
   editor.ui.registry.addMenuButton('tablecellbackgroundcolor', {
-    icon: 'table-cell-background-color',
-    tooltip: 'Table Cell Background Color',
+    icon: 'cell-background-color',
+    tooltip: 'Background color',
     fetch: (callback) => {
       callback([
         {
@@ -292,13 +293,14 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
           }
         }
       ]);
-    }
+    },
+    onSetup: selectionTargets.onSetupTable
   });
 
   const tableCellBorderColors = getTableCellBorderColors(editor);
   editor.ui.registry.addMenuButton('tablecellbordercolor', {
-    icon: 'table-cell-border-color',
-    tooltip: 'Table Cell Border Color',
+    icon: 'cell-border-color',
+    tooltip: 'Border Color',
     fetch: (callback) => {
       callback([
         {
@@ -316,12 +318,14 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
           }
         }
       ]);
-    }
+    },
+    onSetup: selectionTargets.onSetupTable
   });
 
   const tableCellBorderWidthsList = getTableBorderWidths(editor);
   editor.ui.registry.addMenuButton('tablecellborderwidth', {
     icon: 'border-width',
+    tooltip: 'Border width',
     fetch: (callback) => {
       callback(Arr.map(tableCellBorderWidthsList, (item): Menu.ToggleMenuItemSpec => {
         return {
@@ -335,12 +339,14 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
           onSetup: onSetupToggle(editor, 'tablecellborderwidth', item.value)
         };
       }));
-    }
+    },
+    onSetup: selectionTargets.onSetupTable
   });
 
   const tableCellBorderStylesList = getTableBorderStyles(editor);
   editor.ui.registry.addMenuButton('tablecellborderstyle', {
     icon: 'border-style',
+    tooltip: 'Border style',
     fetch: (callback) => {
       callback(Arr.map(tableCellBorderStylesList, (item): Menu.ToggleMenuItemSpec => {
         return {
@@ -354,27 +360,22 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
           onSetup: onSetupToggle(editor, 'tablecellborderstyle', item.value)
         };
       }));
-    }
+    },
+    onSetup: selectionTargets.onSetupTable
   });
 
-  editor.ui.registry.addButton('tablecolumnheader', {
-    tooltip: 'Table Column Header',
-    icon: 'table-top-header',
+  editor.ui.registry.addButton('tablecolheader', {
+    tooltip: 'Column header',
+    icon: 'table-left-header',
     onAction: cmd('mceTableToggleColumnHeader'),
     onSetup: selectionTargets.onSetupColumn(LockedDisable.onAny)
   });
 
   editor.ui.registry.addButton('tablerowheader', {
-    tooltip: 'Table Row Header',
-    icon: 'table-left-header',
+    tooltip: 'Row header',
+    icon: 'table-top-header',
     onAction: cmd('mceTableToggleRowHeader'),
     onSetup: selectionTargets.onSetupColumn(LockedDisable.onAny)
-  });
-
-  editor.ui.registry.addButton('tablecolprops', {
-    tooltip: 'Column properties',
-    icon: 'table-column-properties',
-    onAction: cmd('mceTableColumnProps'),
   });
 };
 

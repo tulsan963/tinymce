@@ -25,23 +25,23 @@ const defaultStyles = {
 
 const defaultCellBorderWidth = [
   {
-    title: '1 Pixel',
+    title: '1px',
     value: '1px'
   },
   {
-    title: '2 Pixels',
+    title: '2px',
     value: '2px'
   },
   {
-    title: '3 Pixels',
+    title: '3px',
     value: '3px'
   },
   {
-    title: '4 Pixels',
+    title: '4px',
     value: '4px'
   },
   {
-    title: '5 Pixels',
+    title: '5px',
     value: '5px'
   }
 ];
@@ -66,7 +66,7 @@ const defaultCellBorderStyles = [
 ];
 
 const mapColors = (colorMap: string[]): Menu.ChoiceMenuItemSpec[] => {
-  const colors = [];
+  const colors: Menu.ChoiceMenuItemSpec[] = [];
 
   const canvas = document.createElement('canvas');
   canvas.height = 1;
@@ -97,11 +97,29 @@ const mapColors = (colorMap: string[]): Menu.ChoiceMenuItemSpec[] => {
   };
 
   for (let i = 0; i < colorMap.length; i += 2) {
-    colors.push({
-      text: colorMap[i + 1],
-      value: asHexColor(colorMap[i]),
-      type: 'choiceitem'
-    });
+    const value = colorMap[i];
+
+    if (value === 'remove') {
+      colors.push({
+        type: 'choiceitem',
+        text: 'Remove color',
+        icon: 'color-swatch-remove-color',
+        value: 'remove'
+      });
+    } else if (value === 'custom') {
+      colors.push({
+        type: 'choiceitem',
+        text: 'Custom color',
+        icon: 'color-picker',
+        value: 'custom'
+      });
+    } else {
+      colors.push({
+        text: colorMap[i + 1],
+        value: asHexColor(colorMap[i]),
+        type: 'choiceitem'
+      });
+    }
   }
 
   return colors;

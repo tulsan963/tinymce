@@ -83,7 +83,7 @@ export default () => {
     /* toolbar: 'undo redo sidebar1 | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | align lineheight fontsizeselect fontselect formatselect styleselect insertfile | styleselect | ' +
     'bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons table codesample code | ltr rtl',
     // */
-    toolbar: 'tablecolprops | tablerowheader tablecolumnheader tablecellbackground | tablecellbordercolor tablecellborderstyle | tablecellborderwidth  tableclass tablecellclass tablecellvalign tablecaption',
+    toolbar: 'tableclass tablecellclass tablecellvalign tablecaption tablecellbackgroundcolor tablecellbordercolor tablecellborderwidth tablecellborderstyle tablecolheader tablerowheader tablecolprops',
     contextmenu: 'link linkchecker image imagetools table lists spellchecker configurepermanentpen', // */
 
     toolbar_mode: 'floating',
@@ -111,14 +111,16 @@ export default () => {
         value: 'double'
       }
     ],*/
-    cell_background_color_map: [
+    table_cell_background_color_map: [
       '000000', 'Black',
       '808080', 'Gray',
       'FFFFFF', 'White',
       'FF0000', 'Red',
       'FFFF00', 'Yellow',
       '008000', 'Green',
-      '0000FF', 'Blue'
+      '0000FF', 'Blue',
+      'remove', 'Remove',
+      'custom', 'Custom',
     ],
     emoticons_database_url: '/src/plugins/emoticons/main/js/emojis.js',
     resize_img_proportional: true,
