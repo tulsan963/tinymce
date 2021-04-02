@@ -184,7 +184,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
       icon: 'table-classes',
       tooltip: 'Table classes',
       fetch: (callback) => {
-        callback(Arr.map(tableClassList, (value) => {
+        const customElements = Arr.map(tableClassList, (value) => {
           const item: Menu.ToggleMenuItemSpec = {
             text: value.title,
             type: 'togglemenuitem',
@@ -195,7 +195,40 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
           };
 
           return item;
-        }));
+        });
+
+        const defaultClassActions: Menu.MenuItemSpec[] = [
+          {
+            text: 'Add All',
+            type: 'menuitem',
+            onAction: (_api: Menu.MenuItemInstanceApi) => {
+              Arr.each(tableClassList, (entry) => {
+                editor.execCommand('mceTableChangeClass', false, {
+                  class: entry.value,
+                  remove: false
+                });
+              });
+            },
+          },
+          {
+            text: 'Remove All',
+            type: 'menuitem',
+            onAction: (_api: Menu.MenuItemInstanceApi) => {
+              Arr.each(tableClassList, (entry) => {
+                editor.execCommand('mceTableChangeClass', false, {
+                  class: entry.value,
+                  remove: true
+                });
+              });
+            },
+          }
+        ];
+
+        const separator: Menu.SeparatorMenuItemSpec = {
+          type: 'separator'
+        };
+
+        callback([].concat(defaultClassActions, separator, customElements));
       },
       onSetup: selectionTargets.onSetupTable
     });
@@ -208,7 +241,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
       icon: 'table-cell-classes',
       tooltip: 'Cell classes',
       fetch: (callback) => {
-        callback(Arr.map(tableCellClassList, (value) => {
+        const customElements = Arr.map(tableCellClassList, (value) => {
           const item: Menu.ToggleMenuItemSpec = {
             text: value.title,
             type: 'togglemenuitem',
@@ -219,7 +252,40 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
           };
 
           return item;
-        }));
+        });
+
+        const defaultClassActions: Menu.MenuItemSpec[] = [
+          {
+            text: 'Add All',
+            type: 'menuitem',
+            onAction: (_api: Menu.MenuItemInstanceApi) => {
+              Arr.each(tableCellClassList, (entry) => {
+                editor.execCommand('mceTableChangeCellClass', false, {
+                  class: entry.value,
+                  remove: false
+                });
+              });
+            },
+          },
+          {
+            text: 'Remove All',
+            type: 'menuitem',
+            onAction: (_api: Menu.MenuItemInstanceApi) => {
+              Arr.each(tableCellClassList, (entry) => {
+                editor.execCommand('mceTableChangeCellClass', false, {
+                  class: entry.value,
+                  remove: true
+                });
+              });
+            },
+          }
+        ];
+
+        const separator: Menu.SeparatorMenuItemSpec = {
+          type: 'separator'
+        };
+
+        callback([].concat(defaultClassActions, separator, customElements));
       },
       onSetup: selectionTargets.onSetupCellOrRow
     });
@@ -260,7 +326,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
         };
       }));
     },
-    onSetup: selectionTargets.onSetupTable
+    onSetup: selectionTargets.onSetupCellOrRow
   });
 
   editor.ui.registry.addToggleButton('tablecaption', {
@@ -294,7 +360,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
         }
       ]);
     },
-    onSetup: selectionTargets.onSetupTable
+    onSetup: selectionTargets.onSetupCellOrRow
   });
 
   const tableCellBorderColors = getTableCellBorderColors(editor);
@@ -319,7 +385,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
         }
       ]);
     },
-    onSetup: selectionTargets.onSetupTable
+    onSetup: selectionTargets.onSetupCellOrRow
   });
 
   const tableCellBorderWidthsList = getTableBorderWidths(editor);
@@ -340,7 +406,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
         };
       }));
     },
-    onSetup: selectionTargets.onSetupTable
+    onSetup: selectionTargets.onSetupCellOrRow
   });
 
   const tableCellBorderStylesList = getTableBorderStyles(editor);
@@ -361,21 +427,21 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
         };
       }));
     },
-    onSetup: selectionTargets.onSetupTable
+    onSetup: selectionTargets.onSetupCellOrRow
   });
 
-  editor.ui.registry.addButton('tablecolheader', {
+  editor.ui.registry.addToggleButton('tablecolheader', {
     tooltip: 'Column header',
     icon: 'table-left-header',
     onAction: cmd('mceTableToggleColumnHeader'),
-    onSetup: selectionTargets.onSetupColumn(LockedDisable.onAny)
+    onSetup: selectionTargets.onSetupTableHeaders(false)
   });
 
-  editor.ui.registry.addButton('tablerowheader', {
+  editor.ui.registry.addToggleButton('tablerowheader', {
     tooltip: 'Row header',
     icon: 'table-top-header',
     onAction: cmd('mceTableToggleRowHeader'),
-    onSetup: selectionTargets.onSetupColumn(LockedDisable.onAny)
+    onSetup: selectionTargets.onSetupTableHeaders(true)
   });
 };
 

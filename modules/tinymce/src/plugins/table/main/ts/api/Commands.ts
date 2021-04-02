@@ -66,18 +66,20 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
   };
 
   const toggleRowHeader = () => {
-    getSelectionStartCell(editor).each((startCell) => {
-      TableLookup.table(startCell, isRoot).filter(Fun.not(isRoot)).each((table) => {
-        const targets = TableTargets.forMenu(selections, table, startCell);
-        const currentType = actions.getTableRowType(editor);
+    const getNewType = () => {
+      const currentType = actions.getTableRowType(editor);
 
-        if (currentType === 'body') {
-          actions.makeRowsHeader(table, targets);
-        } else if (currentType === 'header') {
-          actions.unmakeRowsHeader(table, targets);
-        }
-        // Do nothing on footer
-      });
+      if (currentType === 'body') {
+        return 'header';
+      } else if (currentType === 'header') {
+        return 'body';
+      }
+
+      return currentType;
+    };
+
+    actions.setTableRowType(editor, {
+      type: getNewType(),
     });
   };
 
@@ -137,6 +139,18 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
     });
   };
 
+  const tableChangeClass = (_ui: boolean, request: {class: string; remove: boolean}) => {
+    getSelectionStartCell(editor).each((startCell) => {
+      TableLookup.table(startCell, isRoot).filter(Fun.not(isRoot)).each((table) => {
+        if (request.remove) {
+          Class.remove(table, request.class);
+        } else {
+          Class.add(table, request.class);
+        }
+      });
+    });
+  };
+
   const toggleTableCellClass = (_ui: boolean, requestedClass: string) => {
     getSelectionStartCell(editor).each((startCell) => {
       TableLookup.table(startCell, isRoot).filter(Fun.not(isRoot)).each((table) => {
@@ -156,6 +170,31 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
             Class.remove(value.element, requestedClass);
           } else {
             Class.add(value.element, requestedClass);
+          }
+        });
+      });
+    });
+  };
+
+  const tableChangeCellClass = (_ui: boolean, request: {class: string; remove: boolean}) => {
+    getSelectionStartCell(editor).each((startCell) => {
+      TableLookup.table(startCell, isRoot).filter(Fun.not(isRoot)).each((table) => {
+        const cells = TableSelection.getCellsFromSelection(startCell, selections);
+
+        const warehouse = Warehouse.fromTable(table);
+        const allCells = Warehouse.justCells(warehouse);
+
+        const filtered = Arr.filter(allCells, (cellA) =>
+          Arr.exists(cells, (cellB) =>
+            Compare.eq(cellA.element, cellB)
+          )
+        );
+
+        Arr.each(filtered, (value) => {
+          if (request.remove) {
+            Class.remove(value.element, request.class);
+          } else {
+            Class.add(value.element, request.class);
           }
         });
       });
@@ -225,7 +264,9 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
     mceTableDelete: eraseTable,
     mceTableToggleCaption: toggleCaption,
     mceTableCellToggleClass: toggleTableCellClass,
+    mceTableChangeCellClass: tableChangeCellClass,
     mceTableToggleClass: toggleTableClass,
+    mceTableChangeClass: tableChangeClass,
     mceTableSizingMode: (_ui: boolean, sizing: string) => setSizingMode(sizing)
   }, (func, name) => editor.addCommand(name, func));
 
