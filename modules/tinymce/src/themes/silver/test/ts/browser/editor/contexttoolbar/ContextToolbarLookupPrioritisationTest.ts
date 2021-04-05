@@ -13,7 +13,8 @@ describe('browser.tinymce.themes.silver.editor.contexttoolbar.ContextToolbarLook
     items,
     predicate: Fun.always,
     position: 'selection',
-    scope: 'node'
+    scope: 'node',
+    launch: Optional.none()
   });
 
   const createForm = (): InlineContent.ContextForm => ({

@@ -6,6 +6,7 @@ import { MenuItemSpec } from '../components/menu/MenuItem';
 import { NestedMenuItemSpec } from '../components/menu/NestedMenuItem';
 import { ToggleMenuItemSpec } from '../components/menu/ToggleMenuItem';
 import { SidebarSpec } from '../components/sidebar/Sidebar';
+import { ContextToolbarButtonSpec } from '../components/toolbar/ContextToolbarButton';
 import { GroupToolbarButtonSpec } from '../components/toolbar/GroupToolbarButton';
 import { ToolbarButtonSpec } from '../components/toolbar/ToolbarButton';
 import { ToolbarMenuButtonSpec } from '../components/toolbar/ToolbarMenuButton';
@@ -32,7 +33,7 @@ export interface Registry {
   addSidebar: (name: string, spec: SidebarSpec) => void;
 
   getAll: () => {
-    buttons: Record<string, ToolbarButtonSpec | GroupToolbarButtonSpec | ToolbarMenuButtonSpec | ToolbarSplitButtonSpec | ToolbarToggleButtonSpec>;
+    buttons: Record<string, ToolbarButtonSpec | GroupToolbarButtonSpec | ToolbarMenuButtonSpec | ToolbarSplitButtonSpec | ToolbarToggleButtonSpec | ContextToolbarButtonSpec>;
     menuItems: Record<string, MenuItemSpec | NestedMenuItemSpec | ToggleMenuItemSpec>;
     popups: Record<string, AutocompleterSpec>;
     contextMenus: Record<string, ContextMenuApi>;

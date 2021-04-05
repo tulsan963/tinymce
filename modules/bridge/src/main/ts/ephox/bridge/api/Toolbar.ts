@@ -1,4 +1,7 @@
 import {
+  ContextToolbarButton, ContextToolbarButtonSpec, ContextToolbarButtonInstanceApi, createContextToolbarButton
+} from '../components/toolbar/ContextToolbarButton';
+import {
   createGroupToolbarButton, GroupToolbarButton, GroupToolbarButtonInstanceApi, GroupToolbarButtonSpec
 } from '../components/toolbar/GroupToolbarButton';
 import { createToolbarButton, ToolbarButton, ToolbarButtonInstanceApi, ToolbarButtonSpec } from '../components/toolbar/ToolbarButton';
@@ -31,10 +34,15 @@ export {
   ToolbarToggleButtonInstanceApi,
   createToggleButton,
 
-  createGroupToolbarButton,
   GroupToolbarButton,
   GroupToolbarButtonSpec,
   GroupToolbarButtonInstanceApi,
+  createGroupToolbarButton,
+
+  ContextToolbarButton,
+  ContextToolbarButtonSpec,
+  ContextToolbarButtonInstanceApi,
+  createContextToolbarButton,
 
   ColumnTypes,
   PresetItemTypes,

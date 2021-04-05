@@ -6,6 +6,8 @@
  */
 
 import { Behaviour, Replacing, SimpleOrSketchSpec } from '@ephox/alloy';
+import { Arr } from '@ephox/katamari';
+import I18n from 'tinymce/core/api/util/I18n';
 
 import { UiFactoryBackstageProviders } from '../../backstage/Backstage';
 import { get as getIcon, IconProvider } from '../icons/Icons';
@@ -22,6 +24,15 @@ const renderIcon = (iconHtml, behaviours): SimpleOrSketchSpec =>
   });
 
 const renderIconFromPack = (iconName: string, iconsProvider: IconProvider): SimpleOrSketchSpec => renderIcon(getIcon(iconName, iconsProvider), { });
+
+// TODO TINY-3598: Implement a permanent solution to render rtl icons
+// Icons that have `-rtl` equivalents
+const rtlIcons = [
+  'checklist',
+  'ordered-list'
+];
+const getIconName = (iconName: string): string => I18n.isRtl() && Arr.contains(rtlIcons, iconName) ? iconName + '-rtl' : iconName;
+const renderRtlAdjustedIconFromPack = (iconName: string, iconProvider: IconProvider) => renderIconFromPack(getIconName(iconName), iconProvider);
 
 const renderReplacableIconFromPack = (iconName: string, iconsProvider: IconProvider): SimpleOrSketchSpec => renderIcon(getIcon(iconName, iconsProvider), {
   behaviours: Behaviour.derive([
@@ -42,6 +53,7 @@ const renderLabel = (text: string, prefix: string, providersBackstage: UiFactory
 
 export {
   renderIconFromPack,
+  renderRtlAdjustedIconFromPack,
   renderReplacableIconFromPack,
   renderLabel
 };

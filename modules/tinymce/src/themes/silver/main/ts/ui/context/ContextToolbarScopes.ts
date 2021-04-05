@@ -7,7 +7,7 @@
 
 import { ValueSchema } from '@ephox/boulder';
 import { InlineContent, Toolbar } from '@ephox/bridge';
-import { Arr, Obj } from '@ephox/katamari';
+import { Obj } from '@ephox/katamari';
 import { ContextTypes } from '../../ContextToolbar';
 
 // Divide the defined toolbars into forms, node scopes, and editor scopes
@@ -17,15 +17,20 @@ export interface ScopedToolbars {
   inEditorScope: Array<ContextTypes>;
   lookupTable: Record<string, ContextTypes>;
   formNavigators: Record<string, Toolbar.ToolbarButtonSpec | Toolbar.ToolbarToggleButtonSpec>; // this stays API due to toolbar applying bridge
+  contextNavigators: Record<string, Toolbar.ContextToolbarButtonSpec>;
 }
 
-const categorise = (contextToolbars: Record<string, InlineContent.ContextFormSpec | InlineContent.ContextToolbarSpec>, navigate: (destForm: InlineContent.ContextForm) => void): ScopedToolbars => {
+const categorise = (
+  contextToolbars: Record<string, InlineContent.ContextFormSpec | InlineContent.ContextToolbarSpec>,
+  navigate: (type: string, destForm: InlineContent.ContextForm | InlineContent.ContextToolbar) => void
+): ScopedToolbars => {
 
   // TODO: Use foldl/foldr and avoid as much mutation.
   const forms: Record<string, InlineContent.ContextForm> = { };
   const inNodeScope: Array<ContextTypes> = [ ];
   const inEditorScope: Array<ContextTypes> = [ ];
   const formNavigators: Record<string, Toolbar.ToolbarButtonSpec | Toolbar.ToolbarToggleButtonSpec> = { };
+  const contextNavigators: Record<string, Toolbar.ContextToolbarButtonSpec> = { };
   const lookupTable: Record<string, ContextTypes> = { };
 
   const registerForm = (key: string, toolbarSpec: InlineContent.ContextFormSpec) => {
@@ -37,7 +42,7 @@ const categorise = (contextToolbars: Record<string, InlineContent.ContextFormSpe
         ...toolbarSpec.launch,
         type: (launch.type === 'contextformtogglebutton' ? 'togglebutton' : 'button') as any,
         onAction: () => {
-          navigate(contextForm);
+          navigate(key, contextForm);
         }
       };
     });
@@ -53,6 +58,17 @@ const categorise = (contextToolbars: Record<string, InlineContent.ContextFormSpe
 
   const registerToolbar = (key: string, toolbarSpec: InlineContent.ContextToolbarSpec) => {
     InlineContent.createContextToolbar(toolbarSpec).each((contextToolbar) => {
+      contextToolbar.launch.map((_launch) => {
+        // Use the original here (pre-boulder), because using as a the spec for toolbar buttons
+        contextNavigators['group:' + key + ''] = {
+          ...toolbarSpec.launch,
+          type: 'contexttoolbarbutton',
+          onAction: () => {
+            navigate(key, contextToolbar);
+          }
+        };
+      });
+
       if (toolbarSpec.scope === 'editor') {
         inEditorScope.push(contextToolbar);
       } else {
@@ -62,14 +78,15 @@ const categorise = (contextToolbars: Record<string, InlineContent.ContextFormSpe
     });
   };
 
-  const keys = Obj.keys(contextToolbars);
-  Arr.each(keys, (key) => {
-    const toolbarApi = contextToolbars[key];
-    // TS wouldn't really let me do the ternary I wanted :(
-    if (toolbarApi.type === 'contextform') {
-      registerForm(key, toolbarApi);
-    } else if (toolbarApi.type === 'contexttoolbar') {
-      registerToolbar(key, toolbarApi);
+  Obj.each(contextToolbars, (toolbarApi, key) => {
+    switch (toolbarApi.type) {
+      case 'contextform':
+        registerForm(key, toolbarApi);
+        break;
+
+      case 'contexttoolbar':
+        registerToolbar(key, toolbarApi);
+        break;
     }
   });
 
@@ -78,7 +95,8 @@ const categorise = (contextToolbars: Record<string, InlineContent.ContextFormSpe
     inNodeScope,
     inEditorScope,
     lookupTable,
-    formNavigators
+    formNavigators,
+    contextNavigators
   };
 };
 

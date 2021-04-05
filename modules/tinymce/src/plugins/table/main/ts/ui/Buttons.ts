@@ -456,6 +456,142 @@ const addToolbars = (editor: Editor) => {
       scope: 'node',
       position: 'node'
     });
+
+    editor.ui.registry.addContextToolbar('quicktablecell', {
+      items: 'tablecellbackgroundcolor tablecellbordercolor tablecellborderwidth tablecellvalign | tablemergecells tablesplitcells | tablecellprops',
+      launch: {
+        type: 'contextgroupbutton',
+        icon: 'table-cell',
+        tooltip: 'Cell'
+      },
+      // predicate: isTable,
+      // scope: 'node',
+      // position: 'node',
+    });
+
+    editor.ui.registry.addContextToolbar('quicktablerow', {
+      items: 'tablerowheader tableinsertrowbefore tableinsertrowafter | advtablesort cutcopypasterow | tablerowprops tabledeleterow',
+      launch: {
+        type: 'contextgroupbutton',
+        icon: 'table-row',
+        tooltip: 'Row'
+      },
+      // predicate: isTable,
+      // scope: 'node',
+      // position: 'node'
+    });
+
+    editor.ui.registry.addContextToolbar('quicktablecol', {
+      items: 'tablecolheader tableinsertcolbefore tableinsertcolafter | advtablesort cutcopypastecol | tabledeletecol',
+      launch: {
+        type: 'contextgroupbutton',
+        icon: 'table-column',
+        tooltip: 'Column'
+      },
+      // predicate: isTable,
+      // scope: 'node',
+      // position: 'node'
+    });
+
+    editor.ui.registry.addMenuButton('cutcopypasterow', {
+      icon: 'cut-row', // Part of the default icon pack: https://www.tiny.cloud/docs/advanced/editor-icon-identifiers/
+      tooltip: 'Cut copy paste row',
+      fetch: (callback) => {
+        const items = [
+          {
+            type: 'menuitem',
+            text: 'Cut row',
+            icon: 'cut-row',
+            onAction: () => {
+              editor.execCommand('mceTableCutRow');
+            }
+          },
+          {
+            type: 'menuitem',
+            text: 'Copy row',
+            icon: 'duplicate-row',
+            onAction: () => {
+              editor.execCommand('mceTableCopyRow');
+            }
+          },
+          {
+            type: 'menuitem',
+            text: 'Paste row before',
+            icon: 'paste-row-before',
+            onAction: () => {
+              editor.execCommand('mceTablePasteRowBefore');
+            },
+            onSetup: (buttonApi) => {
+              const state = editor.plugins.table.getClipboardRows().length > 0 ? false : true;
+              buttonApi.setDisabled(state);
+            }
+          },
+          {
+            type: 'menuitem',
+            text: 'Paste row after',
+            icon: 'paste-row-after',
+            onAction: () => {
+              editor.execCommand('mceTablePasteRowAfter');
+            },
+            onSetup: (buttonApi) => {
+              const state = editor.plugins.table.getClipboardRows().length > 0 ? false : true;
+              buttonApi.setDisabled(state);
+            }
+          },
+        ];
+        callback(items as any); // TODO:
+      }
+    });
+
+    editor.ui.registry.addMenuButton('cutcopypastecol', {
+      icon: 'cut-column', // Insert the icon from the icon pack at the beginning of this file
+      tooltip: 'Cut copy paste column',
+      fetch: (callback) => {
+        const items = [
+          {
+            type: 'menuitem',
+            text: 'Cut column',
+            icon: 'cut-column',
+            onAction: () => {
+              editor.execCommand('mceTableCutCol');
+            }
+          },
+          {
+            type: 'menuitem',
+            text: 'Copy column',
+            icon: 'duplicate-column',
+            onAction: () => {
+              editor.execCommand('mceTableCopyCol');
+            }
+          },
+          {
+            type: 'menuitem',
+            text: 'Paste column before',
+            icon: 'paste-column-before',
+            onAction: () => {
+              editor.execCommand('mceTablePasteColBefore');
+            },
+            onSetup: (buttonApi) => {
+              const state = editor.plugins.table.getClipboardCols().length > 0 ? false : true;
+              buttonApi.setDisabled(state);
+            }
+          },
+          {
+            type: 'menuitem',
+            text: 'Paste column after',
+            icon: 'paste-column-after',
+            onAction: () => {
+              editor.execCommand('mceTablePasteColAfter');
+            },
+            onSetup: (buttonApi) => {
+              const state = editor.plugins.table.getClipboardCols().length > 0 ? false : true;
+              buttonApi.setDisabled(state);
+            }
+          },
+        ];
+        callback(items as any); // TODO:
+      }
+    });
   }
 };
 
