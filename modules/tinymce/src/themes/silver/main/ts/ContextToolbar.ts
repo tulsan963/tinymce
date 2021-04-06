@@ -19,7 +19,7 @@ import { getToolbarMode, ToolbarMode } from './api/Settings';
 import { UiFactoryBackstage } from './backstage/Backstage';
 import { hideContextToolbarEvent, showContextToolbarEvent } from './ui/context/ContextEditorEvents';
 import { buildContextFormGroups } from './ui/context/ContextForm';
-import { renderContextToolbarBackButton } from './ui/context/ContextGroupButton';
+import { renderContextToolbarReturnButton } from './ui/context/ContextGroupButton';
 import { getContextToolbarBounds } from './ui/context/ContextToolbarBounds';
 import * as ToolbarLookup from './ui/context/ContextToolbarLookup';
 import * as ToolbarScopes from './ui/context/ContextToolbarScopes';
@@ -226,7 +226,7 @@ const register = (editor: Editor, registryContextToolbars, sink: AlloyComponent,
       return {
         title: Optional.none(),
         items: [
-          renderContextToolbarBackButton(
+          renderContextToolbarReturnButton(
             () => {
               ToolbarLookup.lookup(getScopes(), editor).fold(
                 close,

@@ -5,11 +5,11 @@ import { renderRtlAdjustedIconFromPack } from '../button/ButtonSlices';
 import { ToolbarButtonClasses } from '../toolbar/button/ButtonClasses';
 import { renderCommonSpec } from '../toolbar/button/ToolbarButtons';
 
-export const renderContextToolbarBackButton = (onAction, providersBackstage: UiFactoryBackstageProviders) => {
+export const renderContextToolbarReturnButton = (onAction, providersBackstage: UiFactoryBackstageProviders) => {
   const commonSpec = renderCommonSpec(
     providersBackstage,
     [],
-    Optional.some('Go back'),
+    Optional.some('Return'),
     [ ToolbarButtonClasses.ButtonNarrow ],
     [ renderRtlAdjustedIconFromPack(`chevron-left`, providersBackstage.icons) ]
   );
