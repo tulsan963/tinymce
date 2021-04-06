@@ -1,6 +1,6 @@
 import { describe, it } from '@ephox/bedrock-client';
 import { InlineContent } from '@ephox/bridge';
-import { Arr, Fun } from '@ephox/katamari';
+import { Arr, Fun, Optional } from '@ephox/katamari';
 import { assert } from 'chai';
 
 import { ContextTypes } from 'tinymce/themes/silver/ContextToolbar';
@@ -12,7 +12,8 @@ describe('browser.tinymce.themes.silver.editor.contexttoolbar.ContextToolbarLook
     items: 'bold italic',
     predicate: Fun.always,
     position: p,
-    scope: 'node'
+    scope: 'node',
+    launch: Optional.none()
   }));
 
   const assertPositionIsPrioritised = (positions: InlineContent.ContextPosition[], priorities: string[], isStartNode: boolean) => {

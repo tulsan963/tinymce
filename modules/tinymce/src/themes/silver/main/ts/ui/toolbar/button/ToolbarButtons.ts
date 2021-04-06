@@ -6,7 +6,7 @@
  */
 
 import {
-  AddEventsBehaviour, AlloyComponent, AlloyEvents, AlloyTriggers, Behaviour, Button as AlloyButton, Disabling, FloatingToolbarButton, Focusing,
+  AddEventsBehaviour, AlloyComponent, AlloyEvents, AlloySpec, AlloyTriggers, Behaviour, Button as AlloyButton, Disabling, FloatingToolbarButton, Focusing,
   Keying, NativeEvents, Reflecting, Replacing, SketchSpec, SplitDropdown as AlloySplitDropdown, SystemEvents, TieredData, TieredMenuTypes, Toggling,
   Unselecting
 } from '@ephox/alloy';
@@ -21,7 +21,7 @@ import * as ReadOnly from '../../../ReadOnly';
 import { DisablingConfigs } from '../../alien/DisablingConfigs';
 import { detectSize } from '../../alien/FlatgridAutodetect';
 import { SimpleBehaviours } from '../../alien/SimpleBehaviours';
-import { renderIconFromPack, renderLabel } from '../../button/ButtonSlices';
+import { renderLabel, renderRtlAdjustedIconFromPack } from '../../button/ButtonSlices';
 import { onControlAttached, onControlDetached, OnDestroy } from '../../controls/Controls';
 import * as Icons from '../../icons/Icons';
 import { componentRenderPipeline } from '../../menus/item/build/CommonMenuItem';
@@ -62,6 +62,7 @@ const getTooltipAttributes = (tooltip: Optional<string>, providersBackstage: UiF
 
 interface GeneralToolbarButton<T> {
   icon: Optional<string>;
+  extraIcon: Optional<string>;
   text: Optional<string>;
   tooltip: Optional<string>;
   onAction: (api: T) => void;
@@ -70,15 +71,8 @@ interface GeneralToolbarButton<T> {
 
 const focusButtonEvent = Id.generate('focus-button');
 
-// TODO TINY-3598: Implement a permanent solution to render rtl icons
-// Icons that have `-rtl` equivalents
-const rtlIcon = [
-  'checklist',
-  'ordered-list'
-];
-
 // Icons that need to be transformed in RTL
-const rtlTransform = [
+const rtlTransformIcons = [
   'indent',
   'outdent',
   'table-insert-column-after',
@@ -87,32 +81,21 @@ const rtlTransform = [
 ];
 
 type Behaviours = Behaviour.NamedConfiguredBehaviour<Behaviour.BehaviourConfigSpec, Behaviour.BehaviourConfigDetail>[];
-const renderCommonStructure = (
-  icon: Optional<string>,
-  text: Optional<string>,
+const renderCommonSpec = (
+  // dom: RawDomSchema,
+  providersBackstage: UiFactoryBackstageProviders,
+  extraBehaviours: Behaviours,
   tooltip: Optional<string>,
-  receiver: Optional<string>,
-  behaviours: Optional<Behaviours>,
-  providersBackstage: UiFactoryBackstageProviders
+  extraClasses: ToolbarButtonClasses[],
+  components: AlloySpec[]
 ) => {
-
-  // If RTL and icon is in whitelist, add RTL icon class for icons that don't have a `-rtl` icon available.
-  // Use `-rtl` icon suffix for icons that do.
-
-  const getIconName = (iconName: string): string => I18n.isRtl() && Arr.contains(rtlIcon, iconName) ? iconName + '-rtl' : iconName;
-  const needsRtlClass = I18n.isRtl() && icon.exists((name) => Arr.contains(rtlTransform, name));
-
   return {
     dom: {
       tag: 'button',
-      classes: [ ToolbarButtonClasses.Button ].concat(text.isSome() ? [ ToolbarButtonClasses.MatchWidth ] : []).concat(needsRtlClass ? [ ToolbarButtonClasses.IconRtl ] : []),
+      classes: [ ToolbarButtonClasses.Button ].concat(extraClasses),
       attributes: getTooltipAttributes(tooltip, providersBackstage)
     },
-    components: componentRenderPipeline([
-      icon.map((iconName) => renderIconFromPack(getIconName(iconName), providersBackstage.icons)),
-      text.map((text) => renderLabel(text, ToolbarButtonClasses.Button, providersBackstage))
-    ]),
-
+    components,
     eventOrder: {
       [NativeEvents.mousedown()]: [
         'focusing',
@@ -131,18 +114,49 @@ const renderCommonStructure = (
             AlloyTriggers.emit(button, focusButtonEvent);
           })
         ])
-      ].concat(
-        receiver.map((r) => Reflecting.config({
-          channel: r,
-          initialData: { icon, text },
-          renderComponents: (data, _state) => componentRenderPipeline([
-            data.icon.map((iconName) => renderIconFromPack(getIconName(iconName), providersBackstage.icons)),
-            data.text.map((text) => renderLabel(text, ToolbarButtonClasses.Button, providersBackstage))
-          ])
-        })).toArray()
-      ).concat(behaviours.getOr([ ]))
+      ].concat(extraBehaviours)
     )
   };
+};
+
+const renderCommonStructure = (
+  icon: Optional<string>,
+  extraIcon: Optional<string>,
+  text: Optional<string>,
+  tooltip: Optional<string>,
+  behaviours: Behaviours,
+  providersBackstage: UiFactoryBackstageProviders
+) => {
+  // If RTL and icon is in whitelist, add RTL icon class for icons that don't have a `-rtl` icon available.
+  // Use `-rtl` icon suffix for icons that do.
+  const needsRtlClass = I18n.isRtl() && icon.exists((name) => Arr.contains(rtlTransformIcons, name));
+
+  const classes = [ ToolbarButtonClasses.Button ]
+    .concat(text.isSome() ? [ ToolbarButtonClasses.MatchWidth ] : [])
+    .concat(needsRtlClass ? [ ToolbarButtonClasses.IconRtl ] : [])
+    .concat(extraIcon.isSome() ? [ ToolbarButtonClasses.ButtonWide ] : []);
+
+  const components = componentRenderPipeline([
+    icon.map((iconName) => renderRtlAdjustedIconFromPack((iconName), providersBackstage.icons)),
+    text.map((text) => renderLabel(text, ToolbarButtonClasses.Button, providersBackstage)),
+    extraIcon.map((extraIconName) => renderRtlAdjustedIconFromPack(extraIconName, providersBackstage.icons))
+  ]);
+
+  return renderCommonSpec(
+    providersBackstage,
+    behaviours,
+    tooltip,
+    classes,
+    components
+  );
+};
+
+const renderContextToolbarButton = (spec: Toolbar.ContextToolbarButton, providersBackstage: UiFactoryBackstageProviders) => {
+  return renderCommonToolbarButton({ ...spec, extraIcon: Optional.some('chevron-right') }, {
+    toolbarButtonBehaviours: [ ],
+    getApi: getButtonApi,
+    onSetup: spec.onSetup
+  }, providersBackstage);
 };
 
 const renderFloatingToolbarButton = (spec: Toolbar.GroupToolbarButton, backstage: UiFactoryBackstage, identifyButtons: (toolbar: string | ToolbarGroupSetting[]) => ToolbarGroup[], attributes: Record<string, string>) => {
@@ -157,7 +171,7 @@ const renderFloatingToolbarButton = (spec: Toolbar.GroupToolbarButton, backstage
       toggledClass: ToolbarButtonClasses.Ticked
     },
     parts: {
-      button: renderCommonStructure(spec.icon, spec.text, spec.tooltip, Optional.none(), Optional.none(), sharedBackstage.providers),
+      button: renderCommonStructure(spec.icon, Optional.none(), spec.text, spec.tooltip, [], sharedBackstage.providers),
       toolbar: {
         dom: {
           tag: 'div',
@@ -169,9 +183,13 @@ const renderFloatingToolbarButton = (spec: Toolbar.GroupToolbarButton, backstage
   });
 };
 
-const renderCommonToolbarButton = <T>(spec: GeneralToolbarButton<T>, specialisation: Specialisation<T>, providersBackstage: UiFactoryBackstageProviders) => {
+const renderCommonToolbarButton = <T>(
+  spec: GeneralToolbarButton<T>,
+  specialisation: Specialisation<T>,
+  providersBackstage: UiFactoryBackstageProviders
+) => {
   const editorOffCell = Cell(Fun.noop);
-  const structure = renderCommonStructure(spec.icon, spec.text, spec.tooltip, Optional.none(), Optional.none(), providersBackstage);
+  const structure = renderCommonStructure(spec.icon, spec.extraIcon, spec.text, spec.tooltip, [], providersBackstage);
   return AlloyButton.sketch({
     dom: structure.dom,
     components: structure.components,
@@ -196,7 +214,7 @@ const renderCommonToolbarButton = <T>(spec: GeneralToolbarButton<T>, specialisat
 
 const renderToolbarButton = (spec: Toolbar.ToolbarButton, providersBackstage: UiFactoryBackstageProviders) => renderToolbarButtonWith(spec, providersBackstage, [ ]);
 
-const renderToolbarButtonWith = (spec: Toolbar.ToolbarButton, providersBackstage: UiFactoryBackstageProviders, bonusEvents: AlloyEvents.AlloyEventKeyAndHandler<any>[]) => renderCommonToolbarButton(spec, {
+const renderToolbarButtonWith = (spec: Toolbar.ToolbarButton, providersBackstage: UiFactoryBackstageProviders, bonusEvents: AlloyEvents.AlloyEventKeyAndHandler<any>[]) => renderCommonToolbarButton({ ...spec, extraIcon: Optional.none() }, {
   toolbarButtonBehaviours: [ ].concat(bonusEvents.length > 0 ? [
     // TODO: May have to pass through eventOrder if events start clashing
     AddEventsBehaviour.config('toolbarButtonWith', bonusEvents)
@@ -208,7 +226,7 @@ const renderToolbarButtonWith = (spec: Toolbar.ToolbarButton, providersBackstage
 const renderToolbarToggleButton = (spec: Toolbar.ToolbarToggleButton, providersBackstage: UiFactoryBackstageProviders) => renderToolbarToggleButtonWith(spec, providersBackstage, [ ]);
 
 const renderToolbarToggleButtonWith = (spec: Toolbar.ToolbarToggleButton, providersBackstage: UiFactoryBackstageProviders, bonusEvents: AlloyEvents.AlloyEventKeyAndHandler<any>[]) => Merger.deepMerge(
-  renderCommonToolbarButton(spec,
+  renderCommonToolbarButton({ ...spec, extraIcon: Optional.none() },
     {
       toolbarButtonBehaviours: [
         Replacing.config({ }),
@@ -294,6 +312,17 @@ const renderSplitButton = (spec: Toolbar.ToolbarSplitButton, sharedBackstage: Ui
     getApi,
     onSetup: spec.onSetup
   };
+
+  const receiver = Optional.some(displayChannel);
+  const extraButtonBehaviours: Behaviours = receiver.map((r) => Reflecting.config({
+    channel: r,
+    initialData: { icon: spec.icon, text: spec.text },
+    renderComponents: (data, _state) => componentRenderPipeline([
+      data.icon.map((iconName) => renderRtlAdjustedIconFromPack(iconName, sharedBackstage.providers.icons)),
+      data.text.map((text) => renderLabel(text, ToolbarButtonClasses.Button, sharedBackstage.providers))
+    ])
+  })).toArray();
+
   return AlloySplitDropdown.sketch({
     dom: {
       tag: 'div',
@@ -333,9 +362,10 @@ const renderSplitButton = (spec: Toolbar.ToolbarSplitButton, sharedBackstage: Ui
 
     components: [
       AlloySplitDropdown.parts.button(
-        renderCommonStructure(spec.icon, spec.text, Optional.none(), Optional.some(displayChannel), Optional.some([
-          Toggling.config({ toggleClass: ToolbarButtonClasses.Ticked, toggleOnExecute: false })
-        ]), sharedBackstage.providers)
+        renderCommonStructure(spec.icon, Optional.none(), spec.text, Optional.none(), [
+          Toggling.config({ toggleClass: ToolbarButtonClasses.Ticked, toggleOnExecute: false }),
+          ...extraButtonBehaviours
+        ], sharedBackstage.providers)
       ),
       AlloySplitDropdown.parts.arrow({
         dom: {
@@ -356,9 +386,10 @@ const renderSplitButton = (spec: Toolbar.ToolbarSplitButton, sharedBackstage: Ui
 };
 
 export {
-  renderCommonStructure,
+  renderCommonSpec,
   renderFloatingToolbarButton,
   renderToolbarButton,
+  renderContextToolbarButton,
   renderToolbarButtonWith,
   renderToolbarToggleButton,
   renderToolbarToggleButtonWith,

@@ -164,7 +164,6 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
     onAction: cmd('mceInsertTable'),
     icon: 'table'
   });
-
 };
 
 const addToolbars = (editor: Editor) => {
@@ -177,6 +176,42 @@ const addToolbars = (editor: Editor) => {
       items: toolbar,
       scope: 'node',
       position: 'node'
+    });
+
+    editor.ui.registry.addContextToolbar('quicktablecell', {
+      items: 'tablecellbackgroundcolor tablecellbordercolor tablecellborderwidth tablecellvalign | tablemergecells tablesplitcells | tablecellprops',
+      launch: {
+        type: 'contextgroupbutton',
+        icon: 'table-cell',
+        tooltip: 'Cell'
+      },
+      // predicate: isTable,
+      // scope: 'node',
+      // position: 'node',
+    });
+
+    editor.ui.registry.addContextToolbar('quicktablerow', {
+      items: 'tablerowheader tableinsertrowbefore tableinsertrowafter | advtablesort rowclipboardactions | tablerowprops tabledeleterow',
+      launch: {
+        type: 'contextgroupbutton',
+        icon: 'table-row',
+        tooltip: 'Row'
+      },
+      // predicate: isTable,
+      // scope: 'node',
+      // position: 'node'
+    });
+
+    editor.ui.registry.addContextToolbar('quicktablecol', {
+      items: 'tablecolheader tableinsertcolbefore tableinsertcolafter | advtablesort colclipboardactions | tabledeletecol',
+      launch: {
+        type: 'contextgroupbutton',
+        icon: 'table-column',
+        tooltip: 'Column'
+      },
+      // predicate: isTable,
+      // scope: 'node',
+      // position: 'node'
     });
   }
 };

@@ -21,7 +21,7 @@ import { createFontsizeSelect } from '../core/complex/FontsizeSelect';
 import { createFormatSelect } from '../core/complex/FormatSelect';
 import { createStyleSelect } from '../core/complex/StyleSelect';
 import { ToolbarButtonClasses } from './button/ButtonClasses';
-import { renderFloatingToolbarButton, renderSplitButton, renderToolbarButton, renderToolbarToggleButton } from './button/ToolbarButtons';
+import { renderFloatingToolbarButton, renderContextToolbarButton, renderSplitButton, renderToolbarButton, renderToolbarToggleButton } from './button/ToolbarButtons';
 import { ToolbarGroup } from './CommonToolbar';
 
 export const handleError = (error) => {
@@ -118,6 +118,14 @@ const types = {
           throw new Error('Toolbar groups are only supported when using floating toolbar mode');
       }
     }
+  ),
+
+  contexttoolbarbutton: renderFromBridge(
+    Toolbar.createContextToolbarButton,
+    (s: Toolbar.ContextToolbarButton, extras) => renderContextToolbarButton(
+      s,
+      extras.backstage.shared.providers
+    )
   ),
 
   styleSelectButton: (editor: Editor, extras: Extras) => createStyleSelect(editor, extras.backstage),
