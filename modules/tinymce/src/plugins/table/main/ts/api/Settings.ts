@@ -155,6 +155,7 @@ const hasAdvancedTableTab = (editor: Editor): boolean => editor.getParam('table_
 const hasAppearanceOptions = (editor: Editor): boolean => editor.getParam('table_appearance_options', true, 'boolean');
 const hasTableGrid = (editor: Editor): boolean => editor.getParam('table_grid', true, 'boolean');
 const shouldStyleWithCss = (editor: Editor): boolean => editor.getParam('table_style_by_css', false, 'boolean');
+const shouldNormalizeBorder = (editor: Editor): boolean => editor.getParam('table_normalize_border', false, 'boolean');
 const getCellClassList = (editor: Editor): ClassList => editor.getParam('table_cell_class_list', [], 'array');
 
 const getTableBorderWidths = (editor: Editor): ClassList => editor.getParam('table_border_widths', defaultCellBorderWidth, 'array');
@@ -228,6 +229,7 @@ export {
   hasAppearanceOptions,
   hasTableGrid,
   shouldStyleWithCss,
+  shouldNormalizeBorder,
   getCellClassList,
   getRowClassList,
   getTableClassList,

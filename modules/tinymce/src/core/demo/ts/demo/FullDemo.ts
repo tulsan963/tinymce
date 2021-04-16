@@ -77,6 +77,7 @@ export default () => {
         value: 'hÖRE'
       },
     ],
+    table_normalize_border: true,
     // rtl_ui: true,
     add_unload_trigger: false,
     autosave_ask_before_unload: false,
