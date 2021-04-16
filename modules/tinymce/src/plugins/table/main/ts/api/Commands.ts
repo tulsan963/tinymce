@@ -8,7 +8,7 @@
 import { Selections } from '@ephox/darwin';
 import { Arr, Fun, Obj, Optional, Type } from '@ephox/katamari';
 import { CopyCols, CopyRows, Sizes, TableFill, TableLookup } from '@ephox/snooker';
-import { Insert, Remove, Replication, SugarElement } from '@ephox/sugar';
+import { Css, Insert, Remove, Replication, SugarElement } from '@ephox/sugar';
 import Editor from 'tinymce/core/api/Editor';
 import { enforceNone, enforcePercentage, enforcePixels } from '../actions/EnforceUnit';
 import { insertTableWithDataValidation } from '../actions/InsertTable';
@@ -23,7 +23,7 @@ import * as CellDialog from '../ui/CellDialog';
 import { DomModifier } from '../ui/DomModifier';
 import * as RowDialog from '../ui/RowDialog';
 import * as TableDialog from '../ui/TableDialog';
-import { isPercentagesForced, isPixelsForced, isResponsiveForced } from './Settings';
+import { isPercentagesForced, isPixelsForced, isResponsiveForced, shouldNormalizeBorder } from './Settings';
 
 const getSelectionStartCellOrCaption = (editor: Editor) => TableSelection.getSelectionStartCellOrCaption(Util.getSelectionStart(editor));
 const getSelectionStartCell = (editor: Editor) => TableSelection.getSelectionStartCell(Util.getSelectionStart(editor));
@@ -181,6 +181,60 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
     }
   });
 
+  const getBorderWidth = (el: SugarElement) => parseInt(Css.get(el, 'border-width'), 10);
+
+  // Border color must always be accompanied by a border-style: double if border-width is 1px or less
+  const normalizeCellBorderColor = (cell: SugarElement<HTMLTableCellElement>, value: string) => {
+    if (value === '') { // TODO: this may remove the borderStyle when it wasn't intended. No workarround?
+      DomModifier.normal(editor, cell.dom).setFormat('tablecellborderstyle', '');
+
+    } else if (1 <= getBorderWidth(cell)) {
+      DomModifier.normal(editor, cell.dom).setFormat('tablecellborderstyle', 'double');
+    }
+  };
+
+  // Border-style dashed or dotted must always be accompanied by a border-width of 2px or above
+  const normalizeCellBorderStyle = (cell: SugarElement<HTMLTableCellElement>, value: string) => {
+    if (value === 'dashed' || value === 'dotted') {
+      if (getBorderWidth(cell) < 2) {
+        DomModifier.normal(editor, cell.dom).setFormat('tablecellborderwidth', '2px');
+      }
+    } else {
+      DomModifier.normal(editor, cell.dom).setFormat('tablecellborderwidth', '');
+    }
+  };
+
+  // A border-width of 1px or less can’t have border-style dotted or dashed thus must border-style set to double if border-color exists, or removed.
+  const normalizeCellBorderWidth = (cell: SugarElement<HTMLTableCellElement>, value: number) => {
+    const borderStyle = Css.get(cell, 'border-style');
+    if (
+      value <= 1 && // A border-width of 1px or less
+      (borderStyle === 'dashed' || borderStyle === 'dotted') // can’t have border-style dotted or dashed
+    ) {
+      // must border-style set to double if border-color exists, or removed
+      DomModifier.normal(editor, cell.dom).setFormat(
+        'tablecellborderstyle',
+        Css.getRaw(cell, 'border-color').isSome() ? 'double' : ''
+      );
+    } else if (value > 1 && borderStyle === 'double') {
+      DomModifier.normal(editor, cell.dom).setFormat('tablecellborderstyle', 'solid');
+    }
+  };
+
+  const normalizeBorder = (cell: SugarElement<HTMLTableCellElement>, appliedFormat: string, appliedValue: string) => {
+    switch (appliedFormat) {
+      case 'tablecellbordercolor':
+        normalizeCellBorderColor(cell, appliedValue);
+        break;
+      case 'tablecellborderstyle':
+        normalizeCellBorderStyle(cell, appliedValue);
+        break;
+      case 'tablecellborderwidth':
+        normalizeCellBorderWidth(cell, parseInt(appliedValue, 10));
+        break;
+    }
+  };
+
   // Apply cell style using command (background color, border color, border style and border width)
   // tinyMCE.activeEditor.execCommand('mceTableApplyCellStyle', false, { backgroundColor: 'red', borderColor: 'blue' })
   // Remove cell style using command (an empty string indicates to remove the style)
@@ -206,7 +260,12 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
 
     Obj.each(validArgs, (value, style) => {
       Arr.each(cells, (cell) => {
-        DomModifier.normal(editor, cell.dom).setFormat(getFormatName(style), value);
+        const formatName = getFormatName(style);
+        DomModifier.normal(editor, cell.dom).setFormat(formatName, value);
+        // normalizeCellBorder(cell);
+        if (shouldNormalizeBorder(editor)) {
+          normalizeBorder(cell, formatName, value);
+        }
       });
     });
 
