@@ -1,9 +1,8 @@
 // TODO: Alloy must go through tinymce's APIs
-import { AddEventsBehaviour, AlloyComponent, AlloyEvents, Behaviour, Boxes, Button, Container, GuiFactory, InlineView, Layout, MaxHeight, MaxWidth, NativeEvents, Replacing, Toggling } from '@ephox/alloy';
+import { AddEventsBehaviour, AlloyComponent, AlloyEvents, Behaviour, Boxes, Button, Container, GuiFactory, InlineView, Layout, MaxHeight, MaxWidth, NativeEvents, Toggling } from '@ephox/alloy';
 import { SelectionAnnotation } from '@ephox/darwin';
 import { Arr, Fun, Obj, Optional, Optionals, Result } from '@ephox/katamari';
 import { Blocks, Warehouse } from '@ephox/snooker';
-import { DetailExt } from '@ephox/snooker/src/main/ts/ephox/snooker/api/Structs'; // TODO:
 import { Attribute, Height, SelectorFind, SugarElement, SugarNode, Width } from '@ephox/sugar';
 import Editor from 'tinymce/core/api/Editor';
 import { UiFactoryBackstageShared } from './backstage/Backstage';
@@ -135,9 +134,9 @@ const setupTableUi = (editor: Editor, lazySink: () => Result<AlloyComponent, Err
         click: [ 'button press', 'alloy.base.behaviour' ],
         mousedown: [ 'button press', 'alloy.base.behaviour' ]
       },
-      action: () => {
-        console.log('Opening menu'); // TODO: need to create a new kind of menu, similar to context menu
-      }
+      action: Fun.noop // () => {
+      // console.log('Opening menu'); // TODO: need to create a new kind of menu, similar to context menu
+      // }
     });
 
     const renderDeleteButton = (action: () => void) => Button.sketch({
@@ -150,11 +149,11 @@ const setupTableUi = (editor: Editor, lazySink: () => Result<AlloyComponent, Err
       },
       buttonBehaviours: Behaviour.derive([
         AddEventsBehaviour.config('button press', [
-          AlloyEvents.run(NativeEvents.mouseover(), (comp, se) => { // Also focusin and focusout
-            console.log('mouseover');
+          AlloyEvents.run(NativeEvents.mouseover(), (_comp, _se) => { // Also focusin and focusout
+            // console.log('mouseover');
           }),
-          AlloyEvents.run(NativeEvents.mouseout(), (comp, se) => {
-            console.log('mouseout');
+          AlloyEvents.run(NativeEvents.mouseout(), (_comp, _se) => {
+            // console.log('mouseout');
           }),
           AlloyEvents.preventDefault('click'),
           AlloyEvents.preventDefault('mousedown')
