@@ -8,7 +8,7 @@
 import { Selections } from '@ephox/darwin';
 import { Arr, Fun, Obj, Optional, Type } from '@ephox/katamari';
 import { CopyCols, CopyRows, Sizes, TableFill, TableLookup } from '@ephox/snooker';
-import { Insert, Remove, Replication, SugarElement } from '@ephox/sugar';
+import { Class, Insert, Remove, Replication, SugarElement } from '@ephox/sugar';
 import Editor from 'tinymce/core/api/Editor';
 import { enforceNone, enforcePercentage, enforcePixels } from '../actions/EnforceUnit';
 import { insertTableWithDataValidation } from '../actions/InsertTable';
@@ -69,6 +69,30 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
 
   const getTableFromCell = (cell: SugarElement<HTMLTableCellElement>) => TableLookup.table(cell, isRoot);
 
+  const toggleTableClass = (_ui: boolean, requestedClass: string) => {
+    getSelectionStartCellOrCaption(editor).each((startCell) => {
+      TableLookup.table(startCell, isRoot).filter(Fun.not(isRoot)).each((table) => {
+        Class.toggle(table, requestedClass);
+
+        Events.fireTableModified(editor, table.dom, Events.styleModified);
+      });
+    });
+  };
+
+  const toggleTableCellClass = (_ui: boolean, requestedClass: string) => {
+    getSelectionStartCell(editor).each((startCell) => {
+      TableLookup.table(startCell, isRoot).each((table) => {
+        const cells = TableSelection.getCellsFromSelection(startCell, selections);
+
+        Arr.each(cells, (value) => {
+          Class.toggle(value, requestedClass);
+        });
+
+        Events.fireTableModified(editor, table.dom, Events.styleModified);
+      });
+    });
+  };
+
   const postExecute = (table: SugarElement<HTMLTableElement>) => (data: TableActionResult): void => {
     editor.selection.setRng(data.rng);
     editor.focus();
@@ -121,22 +145,24 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
     mceTableInsertColAfter: () => actOnSelection(actions.insertColumnsAfter),
     mceTableDeleteCol: () => actOnSelection(actions.deleteColumn),
     mceTableDeleteRow: () => actOnSelection(actions.deleteRow),
-    mceTableCutCol: (_grid) => copyColSelection().each((selection) => {
+    mceTableCutCol: () => copyColSelection().each((selection) => {
       clipboard.setColumns(selection);
       actOnSelection(actions.deleteColumn);
     }),
-    mceTableCutRow: (_grid) => copyRowSelection().each((selection) => {
+    mceTableCutRow: () => copyRowSelection().each((selection) => {
       clipboard.setRows(selection);
       actOnSelection(actions.deleteRow);
     }),
-    mceTableCopyCol: (_grid) => copyColSelection().each((selection) => clipboard.setColumns(selection)),
-    mceTableCopyRow: (_grid) => copyRowSelection().each((selection) => clipboard.setRows(selection)),
-    mceTablePasteColBefore: (_grid) => pasteOnSelection(actions.pasteColsBefore, clipboard.getColumns),
-    mceTablePasteColAfter: (_grid) => pasteOnSelection(actions.pasteColsAfter, clipboard.getColumns),
-    mceTablePasteRowBefore: (_grid) => pasteOnSelection(actions.pasteRowsBefore, clipboard.getRows),
-    mceTablePasteRowAfter: (_grid) => pasteOnSelection(actions.pasteRowsAfter, clipboard.getRows),
+    mceTableCopyCol: () => copyColSelection().each((selection) => clipboard.setColumns(selection)),
+    mceTableCopyRow: () => copyRowSelection().each((selection) => clipboard.setRows(selection)),
+    mceTablePasteColBefore: () => pasteOnSelection(actions.pasteColsBefore, clipboard.getColumns),
+    mceTablePasteColAfter: () => pasteOnSelection(actions.pasteColsAfter, clipboard.getColumns),
+    mceTablePasteRowBefore: () => pasteOnSelection(actions.pasteRowsBefore, clipboard.getRows),
+    mceTablePasteRowAfter: () => pasteOnSelection(actions.pasteRowsAfter, clipboard.getRows),
     mceTableDelete: eraseTable,
-    mceTableSizingMode: (ui: boolean, sizing: string) => setSizingMode(sizing)
+    mceTableCellToggleClass: toggleTableCellClass,
+    mceTableToggleClass: toggleTableClass,
+    mceTableSizingMode: (_ui: boolean, sizing: string) => setSizingMode(sizing)
   }, (func, name) => editor.addCommand(name, func));
 
   // Due to a bug, we need to pass through a reference to the table obtained before the modification

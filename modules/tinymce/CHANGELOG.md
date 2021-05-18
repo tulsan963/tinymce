@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 5.8.1 - TBD
 
+### Added
+- Added the new command `mceTableCellToggleClass` which toggles currently selected cells to have or not have the provided class #TINY-7476
+- Added the new command `mceTableToggleClass` which toggles currently selected table to have or not have the provided class #TINY-7476
+
 ### Fixed
 - An unexpected exception was thrown when switching to readonly mode and adjusting the editor width #TINY-6383
 - Fixed a bug where block elements containing a pagebreak could be removed from the editor content #TINY-3388
