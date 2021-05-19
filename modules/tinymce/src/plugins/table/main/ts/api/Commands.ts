@@ -25,7 +25,10 @@ import * as RowDialog from '../ui/RowDialog';
 import * as TableDialog from '../ui/TableDialog';
 import { isPercentagesForced, isPixelsForced, isResponsiveForced } from './Settings';
 
+type ExecuteAction = (table: SugarElement<HTMLTableElement>, startCell: SugarElement<HTMLTableCellElement>) => void;
+
 const getSelectionStartCellOrCaption = (editor: Editor) => TableSelection.getSelectionStartCellOrCaption(Util.getSelectionStart(editor), Util.getIsRoot(editor));
+
 const getSelectionStartCell = (editor: Editor) => TableSelection.getSelectionStartCell(Util.getSelectionStart(editor), Util.getIsRoot(editor));
 
 const registerCommands = (editor: Editor, actions: TableActions, cellSelection: CellSelectionApi, selections: Selections, clipboard: Clipboard) => {
@@ -69,27 +72,31 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
 
   const getTableFromCell = (cell: SugarElement<HTMLTableCellElement>) => TableLookup.table(cell, isRoot);
 
-  const toggleTableClass = (_ui: boolean, requestedClass: string) => {
-    getSelectionStartCellOrCaption(editor).each((startCell) => {
-      TableLookup.table(startCell, isRoot).filter(Fun.not(isRoot)).each((table) => {
-        Class.toggle(table, requestedClass);
-
-        Events.fireTableModified(editor, table.dom, Events.styleModified);
+  const performActionOnSelection = (action: ExecuteAction) => {
+    getSelectionStartCell(editor).each((cell) => {
+      getTableFromCell(cell).each((table) => {
+        action(table, cell);
       });
     });
   };
 
+  const toggleTableClass = (_ui: boolean, requestedClass: string) => {
+    performActionOnSelection((table) => {
+      Class.toggle(table, requestedClass);
+
+      Events.fireTableModified(editor, table.dom, Events.styleModified);
+    });
+  };
+
   const toggleTableCellClass = (_ui: boolean, requestedClass: string) => {
-    getSelectionStartCell(editor).each((startCell) => {
-      TableLookup.table(startCell, isRoot).each((table) => {
-        const cells = TableSelection.getCellsFromSelection(startCell, selections);
+    performActionOnSelection((table, startCell) => {
+      const cells = TableSelection.getCellsFromSelection(startCell, selections);
 
-        Arr.each(cells, (value) => {
-          Class.toggle(value, requestedClass);
-        });
-
-        Events.fireTableModified(editor, table.dom, Events.styleModified);
+      Arr.each(cells, (value) => {
+        Class.toggle(value, requestedClass);
       });
+
+      Events.fireTableModified(editor, table.dom, Events.styleModified);
     });
   };
 
