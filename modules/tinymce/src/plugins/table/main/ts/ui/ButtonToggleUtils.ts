@@ -10,15 +10,11 @@ import Editor from 'tinymce/core/api/Editor';
 import { Toolbar } from 'tinymce/core/api/ui/Ui';
 
 const onSetupToggle = (editor: Editor, styleName: string, styleValue: string) => {
-  return (api: Toolbar.ToolbarToggleButtonInstanceApi) => {
+  return (api: Toolbar.ToolbarMenuButtonInstanceApi) => {
     const boundCallback = Singleton.unbindable();
 
     const init = () => {
-      const value = {
-        value: styleValue
-      };
-
-      api.setActive(editor.formatter.match(styleName, value));
+      api.setActive(editor.formatter.match(styleName, { value: styleValue }));
       const binding = editor.formatter.formatChanged(styleName, api.setActive);
       boundCallback.set(binding);
     };
