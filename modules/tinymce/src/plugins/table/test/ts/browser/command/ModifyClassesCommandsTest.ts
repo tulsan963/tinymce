@@ -8,9 +8,9 @@ import { TableModifiedEvent } from 'tinymce/plugins/table/api/Events';
 import Plugin from 'tinymce/plugins/table/Plugin';
 import Theme from 'tinymce/themes/silver/Theme';
 
-const platform = PlatformDetection.detect();
+describe('browser.tinymce.plugins.table.command.ModifyClassesCommandsTest', () => {
+  const platform = PlatformDetection.detect();
 
-describe('browser.tinymce.plugins.table.command.ModifiyClassesCommandsTest', () => {
   const hook = TinyHooks.bddSetupLight<Editor>({
     plugins: 'table',
     indent: false,
@@ -23,226 +23,219 @@ describe('browser.tinymce.plugins.table.command.ModifiyClassesCommandsTest', () 
     }
   }, [ Plugin, Theme ], true);
 
-  const cleanTableHtml = (html: string) =>
-    html.replace(/<p>(&nbsp;|<br[^>]+>)<\/p>$/, '');
-
   let events: Array<EditorEvent<TableModifiedEvent>> = [];
   const logEvent = (event: EditorEvent<TableModifiedEvent>) => {
     events.push(event);
   };
 
-  const execCmdAndAssertEvent = (label: string, editor: Editor, cmdName: string, ui?: boolean, data?: string) => {
-    assert.lengthOf(events, 0, label + ', events not zero');
+  const execCmdAndAssertEvent = (editor: Editor, cmdName: string, ui?: boolean, data?: string) => {
+    assert.lengthOf(events, 0, 'Before executing the command');
     editor.execCommand(cmdName, ui, data);
-    assert.lengthOf(events, 1, label + ', events not one');
-    assert.equal(events[0].type, 'tablemodified', label + ', event not tablemodified');
-    assert.isTrue(events[0].structure, label + ', structure is not true');
-    assert.isFalse(events[0].style, label + ', style is not false');
+    assert.lengthOf(events, 1, 'Verifying after command, step 1');
+    assert.equal(events[0].type, 'tablemodified', 'Verifying after command, step 2');
+    assert.isFalse(events[0].structure, 'Verifying after command, step 3');
+    assert.isTrue(events[0].style, 'Verifying after command, step 4');
     events = [];
   };
 
-  context('TINY-7163: Modify cell class', () => {
-    context('Can use mceTableCellToggleClass to toggle the cell class', () => {
-      context('When there is no class already on the cell', () => {
-        const getContentWithoutClass = () => {
-          return (
-            '<table>' +
-              '<tbody>' +
-                '<tr>' +
-                  (platform.browser.isIE() ? '<td>1</td>' : '<td class="">1</td>') +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+  context('Can use mceTableCellToggleClass to toggle the cell class', () => {
+    context('When there is no class already on the cell', () => {
+      const contentWithoutClass = (
+        '<table>' +
+          '<tbody>' +
+            '<tr>' +
+              (platform.browser.isIE() ? '<td>1</td>' : '<td class="">1</td>') +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
 
-        const getContentWithClass = () => {
-          return (
-            '<table>' +
-              '<tbody>' +
-                '<tr>' +
-                  '<td class="a">1</td>' +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+      const contentWithClass = (
+        '<table>' +
+          '<tbody>' +
+            '<tr>' +
+              '<td class="a">1</td>' +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
 
-        it('Can be toggled on', () => {
-          const editor = hook.editor();
-          editor.setContent(getContentWithoutClass());
+      it('TINY-7163: Can be toggled on', () => {
+        const editor = hook.editor();
+        editor.setContent(contentWithoutClass);
 
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
+        TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableCellToggleClass', false, 'a');
+        execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
 
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithClass());
-        });
-
-        it('Can be toggled off', () => {
-          const editor = hook.editor();
-          editor.setContent(getContentWithClass());
-
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
-
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableCellToggleClass', false, 'a');
-
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithoutClass());
-        });
+        assert.equal(editor.getContent(), contentWithClass);
       });
 
-      context('When there is already a class on the cell, which should not be deleted', () => {
-        const getContentWithoutClass = () => {
-          return (
-            '<table>' +
-              '<tbody>' +
-                '<tr>' +
-                  '<td class="b">1</td>' +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+      it('TINY-7163: Can be toggled off', () => {
+        const editor = hook.editor();
+        editor.setContent(contentWithClass);
 
-        const getContentWithClass = () => {
-          return (
-            '<table>' +
-              '<tbody>' +
-                '<tr>' +
-                  '<td class="b a">1</td>' +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+        TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
-        it('Can be toggled on', () => {
-          const editor = hook.editor();
-          editor.setContent(getContentWithoutClass());
+        execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
 
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
-
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableCellToggleClass', false, 'a');
-
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithClass());
-        });
-
-        it('Can be toggled off', () => {
-          const editor = hook.editor();
-          editor.setContent(getContentWithClass());
-
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
-
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableCellToggleClass', false, 'a');
-
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithoutClass());
-        });
+        assert.equal(editor.getContent(), contentWithoutClass);
       });
     });
 
-    context('Can use mceTableToggleClass to toggle the table class', () => {
-      context('When there is no class already on the cell', () => {
-        const getContentWithoutClass = () => {
-          return (
-            '<table>' +
-              '<tbody>' +
-                '<tr>' +
-                  '<td>1</td>' +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+    context('When there is already a class on the cell, which should not be deleted', () => {
+      const contentWithoutClass = (
+        '<table>' +
+          '<tbody>' +
+            '<tr>' +
+              '<td class="b">1</td>' +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
 
-        const getContentWithClass = () => {
-          return (
-            '<table class=" a">' +
-              '<tbody>' +
-                '<tr>' +
-                  '<td>1</td>' +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+      const contentWithClass = (
+        '<table>' +
+          '<tbody>' +
+            '<tr>' +
+              '<td class="b a">1</td>' +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
 
-        it('Can be toggled on', () => {
+      it('TINY-7163: Can be toggled on', () => {
+        const editor = hook.editor();
+        editor.setContent(contentWithoutClass);
+
+        TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
+
+        execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
+
+        assert.equal(editor.getContent(), contentWithClass);
+      });
+
+      it('TINY-7163: Can be toggled off', () => {
+        const editor = hook.editor();
+        editor.setContent(contentWithClass);
+
+        TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
+
+        execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
+
+        assert.equal(editor.getContent(), contentWithoutClass);
+      });
+    });
+  });
+
+  context('Can use mceTableToggleClass to toggle the table class', () => {
+    context('When there is no class already on the table', () => {
+      const contentWithoutClass = (
+        '<table>' +
+          '<tbody>' +
+            '<tr>' +
+              '<td>1</td>' +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
+
+      const contentWithClass = (
+        '<table class=" a">' +
+          '<tbody>' +
+            '<tr>' +
+              '<td>1</td>' +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
+
+      it('TINY-7163: Can be toggled on', () => {
+        const editor = hook.editor();
+        editor.setContent(contentWithoutClass);
+
+        TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
+
+        execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
+
+        assert.equal(editor.getContent(), contentWithClass);
+      });
+
+      it('TINY-7163: Can be toggled off', () => {
+        const editor = hook.editor();
+        editor.setContent(contentWithClass);
+
+        TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
+
+        execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
+
+        assert.equal(editor.getContent(), contentWithoutClass);
+      });
+    });
+
+    context('When there is already a class on the table, which should not be deleted', () => {
+      const contentWithoutClass = (
+        '<table class="b">' +
+          '<tbody>' +
+            '<tr>' +
+              '<td>1</td>' +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
+
+      const contentWithClass = (
+        '<table class="b a">' +
+          '<tbody>' +
+            '<tr>' +
+              '<td>1</td>' +
+              '<td>2</td>' +
+            '</tr>' +
+          '</tbody>' +
+        '</table>'
+      );
+
+      context('Can be toggled on', () => {
+        const onPathSelection = (startPath: number[], startOffset: number, endPath: number[], endOffset: number) => {
           const editor = hook.editor();
-          editor.setContent(getContentWithoutClass());
+          editor.setContent(contentWithoutClass);
 
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
+          TinySelections.setSelection(editor, startPath, startOffset, endPath, endOffset);
 
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableToggleClass', false, 'a');
+          execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
 
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithClass());
+          assert.equal(editor.getContent(), contentWithClass);
+        };
+
+        it('TINY-7163: When the first cell is selected', () => {
+          onPathSelection([ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
         });
 
-        it('Can be toggled off', () => {
-          const editor = hook.editor();
-          editor.setContent(getContentWithClass());
+        it('TINY-7163: When the second cell is selected', () => {
+          onPathSelection([ 0, 0, 0 ], 1, [ 0, 0, 0 ], 2);
+        });
 
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
-
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableToggleClass', false, 'a');
-
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithoutClass());
+        it('TINY-7163: When both cells are selected', () => {
+          onPathSelection([ 0, 0, 0 ], 0, [ 0, 0, 0 ], 2);
         });
       });
 
-      context('When there is already a class on the cell, which should not be deleted', () => {
-        const getContentWithoutClass = () => {
-          return (
-            '<table class="b">' +
-              '<tbody>' +
-                '<tr>' +
-                  '<td>1</td>' +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+      it('TINY-7163: Can be toggled off', () => {
+        const editor = hook.editor();
+        editor.setContent(contentWithClass);
 
-        const getContentWithClass = () => {
-          return (
-            '<table class="b a">' +
-              '<tbody>' +
-                '<tr>' +
-                  '<td>1</td>' +
-                  '<td>2</td>' +
-                '</tr>' +
-              '</tbody>' +
-            '</table>'
-          );
-        };
+        TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
-        it('Can be toggled on', () => {
-          const editor = hook.editor();
-          editor.setContent(getContentWithoutClass());
+        execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
 
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
-
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableToggleClass', false, 'a');
-
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithClass());
-        });
-
-        it('Can be toggled off', () => {
-          const editor = hook.editor();
-          editor.setContent(getContentWithClass());
-
-          TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1, true);
-
-          execCmdAndAssertEvent('TINY-7163', editor, 'mceTableToggleClass', false, 'a');
-
-          assert.equal(cleanTableHtml(editor.getContent()), getContentWithoutClass());
-        });
+        assert.equal(editor.getContent(), contentWithoutClass);
       });
     });
   });
