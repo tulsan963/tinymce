@@ -8,7 +8,7 @@
 import { Menu } from '@ephox/bridge';
 import { Arr } from '@ephox/katamari';
 import Editor from 'tinymce/core/api/Editor';
-import { getCellClassList, getTableClassList, getToolbar } from '../api/Settings';
+import { ClassList, getCellClassList, getTableClassList, getToolbar } from '../api/Settings';
 import { Clipboard } from '../core/Clipboard';
 import { SelectionTargets, LockedDisable } from '../selection/SelectionTargets';
 import { onSetupToggle } from './ButtonToggleUtils';
@@ -177,20 +177,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
     editor.ui.registry.addMenuButton('tableclass', {
       icon: 'table-classes',
       tooltip: 'Table styles',
-      fetch: (callback) => {
-        callback(Arr.map(tableClassList, (value) => {
-          const item: Menu.ToggleMenuItemSpec = {
-            text: value.title,
-            type: 'togglemenuitem',
-            onAction: (_api: Menu.MenuItemInstanceApi) => {
-              editor.execCommand('mceTableToggleClass', false, value.value);
-            },
-            onSetup: onSetupToggle(editor, 'tableclass', value.value)
-          };
-
-          return item;
-        }));
-      },
+      fetch: makeClassFetch(editor, tableClassList, 'mceTableToggleClass', 'tableclass'),
       onSetup: selectionTargets.onSetupTable
     });
   }
@@ -201,20 +188,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
     editor.ui.registry.addMenuButton('tablecellclass', {
       icon: 'table-cell-classes',
       tooltip: 'Cell styles',
-      fetch: (callback) => {
-        callback(Arr.map(tableCellClassList, (value) => {
-          const item: Menu.ToggleMenuItemSpec = {
-            text: value.title,
-            type: 'togglemenuitem',
-            onAction: () => {
-              editor.execCommand('mceTableCellToggleClass', false, value.value);
-            },
-            onSetup: onSetupToggle(editor, 'tablecellclass', value.value)
-          };
-
-          return item;
-        }));
-      },
+      fetch: makeClassFetch(editor, tableCellClassList, 'mceTableCellToggleClass', 'tablecellclass'),
       onSetup: selectionTargets.onSetupCellOrRow
     });
   }
@@ -232,6 +206,23 @@ const addToolbars = (editor: Editor) => {
       position: 'node'
     });
   }
+};
+
+const makeClassFetch = (editor: Editor, list: ClassList, command: string, style: string) => {
+  return (callback) => {
+    callback(Arr.map(list, (value) => {
+      const item: Menu.ToggleMenuItemSpec = {
+        text: value.title,
+        type: 'togglemenuitem',
+        onAction: () => {
+          editor.execCommand(command, false, value.value);
+        },
+        onSetup: onSetupToggle(editor, style, value.value)
+      };
+
+      return item;
+    }));
+  };
 };
 
 export {
