@@ -170,10 +170,7 @@ const addButtons = (editor: Editor, selectionTargets: SelectionTargets, clipboar
 
   const tableClassList = getTableClassList(editor);
 
-  if (tableClassList.length === 0) {
-    // eslint-disable-next-line no-console
-    console.error('Missing table class list');
-  } else {
+  if (tableClassList.length !== 0) {
     editor.ui.registry.addMenuButton('tableclass', {
       icon: 'table-classes',
       tooltip: 'Table styles',
