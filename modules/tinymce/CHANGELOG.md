@@ -6,15 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- Added a new `mceTableToggleClass` command which toggles the provided class on the currently selected table #TINY-7476
+- Added a new `mceTableCellToggleClass` command which toggles the provided class on the currently selected table cells #TINY-7476
+
 ### Fixed
 - Unbinding an event handler did not take effect immediately while the event was firing #TINY-7436
 - Binding an event handler incorrectly took effect immediately while the event was firing #TINY-7436
 
 ### 5.8.1 - TBD
-
-### Added
-- Added the new command `mceTableCellToggleClass` which toggles currently selected cells to have or not have the provided class #TINY-7476
-- Added the new command `mceTableToggleClass` which toggles currently selected table to have or not have the provided class #TINY-7476
 
 ### Fixed
 - An unexpected exception was thrown when switching to readonly mode and adjusting the editor width #TINY-6383
