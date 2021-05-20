@@ -25,7 +25,7 @@ import * as RowDialog from '../ui/RowDialog';
 import * as TableDialog from '../ui/TableDialog';
 import { isPercentagesForced, isPixelsForced, isResponsiveForced } from './Settings';
 
-type ExecuteAction = (table: SugarElement<HTMLTableElement>, startCell: SugarElement<HTMLTableCellElement>) => void;
+type ExecuteAction<T> = (table: SugarElement<HTMLTableElement>, startCell: SugarElement<HTMLTableCellElement>) => T;
 
 const getSelectionStartCellOrCaption = (editor: Editor) => TableSelection.getSelectionStartCellOrCaption(Util.getSelectionStart(editor), Util.getIsRoot(editor));
 
@@ -72,30 +72,19 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
 
   const getTableFromCell = (cell: SugarElement<HTMLTableCellElement>) => TableLookup.table(cell, isRoot);
 
-  const performActionOnSelection = (action: ExecuteAction) => {
-    getSelectionStartCell(editor).each((cell) => {
-      getTableFromCell(cell).each((table) => {
-        action(table, cell);
-      });
-    });
-  };
+  const performActionOnSelection = <T>(action: ExecuteAction<T>): Optional<T> => getSelectionStartCell(editor).bind((cell) => getTableFromCell(cell).map((table) => action(table, cell)));
 
-  const toggleTableClass = (_ui: boolean, requestedClass: string) => {
+  const toggleTableClass = (_ui: boolean, clazz: string) => {
     performActionOnSelection((table) => {
-      Class.toggle(table, requestedClass);
-
+      Class.toggle(table, clazz);
       Events.fireTableModified(editor, table.dom, Events.styleModified);
     });
   };
 
-  const toggleTableCellClass = (_ui: boolean, requestedClass: string) => {
+  const toggleTableCellClass = (_ui: boolean, clazz: string) => {
     performActionOnSelection((table, startCell) => {
       const cells = TableSelection.getCellsFromSelection(startCell, selections);
-
-      Arr.each(cells, (value) => {
-        Class.toggle(value, requestedClass);
-      });
-
+      Arr.each(cells, (value) => Class.toggle(value, clazz));
       Events.fireTableModified(editor, table.dom, Events.styleModified);
     });
   };
@@ -108,38 +97,34 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
     Events.fireTableModified(editor, table.dom, data.effect);
   };
 
-  const actOnSelection = (execute: CombinedTargetsTableAction): void =>
-    getSelectionStartCell(editor).each((cell) => {
-      getTableFromCell(cell).each((table) => {
-        const targets = TableTargets.forMenu(selections, table, cell);
-        execute(table, targets).each(postExecute(table));
-      });
+  const actOnSelection = (execute: CombinedTargetsTableAction) =>
+    performActionOnSelection((table, startCell) => {
+      const targets = TableTargets.forMenu(selections, table, startCell);
+      execute(table, targets).each(postExecute(table));
     });
 
-  const copyRowSelection = () => getSelectionStartCell(editor).map((cell) =>
-    getTableFromCell(cell).bind((table) => {
-      const targets = TableTargets.forMenu(selections, table, cell);
+  const copyRowSelection = () =>
+    performActionOnSelection((table, startCell) => {
+      const targets = TableTargets.forMenu(selections, table, startCell);
       const generators = TableFill.cellOperations(Fun.noop, SugarElement.fromDom(editor.getDoc()), Optional.none());
       return CopyRows.copyRows(table, targets, generators);
-    }));
+    });
 
-  const copyColSelection = () => getSelectionStartCell(editor).map((cell) =>
-    getTableFromCell(cell).bind((table) => {
-      const targets = TableTargets.forMenu(selections, table, cell);
+  const copyColSelection = () =>
+    performActionOnSelection((table, startCell) => {
+      const targets = TableTargets.forMenu(selections, table, startCell);
       return CopyCols.copyCols(table, targets);
-    }));
+    });
 
   const pasteOnSelection = (execute: AdvancedPasteTableAction, getRows: () => Optional<SugarElement<HTMLTableRowElement | HTMLTableColElement>[]>) =>
     // If we have clipboard rows to paste
     getRows().each((rows) => {
       const clonedRows = Arr.map(rows, (row) => Replication.deep<HTMLTableColElement | HTMLTableRowElement>(row));
-      getSelectionStartCell(editor).each((cell) =>
-        getTableFromCell(cell).each((table) => {
-          const generators = TableFill.paste(SugarElement.fromDom(editor.getDoc()));
-          const targets = TableTargets.pasteRows(selections, cell, clonedRows, generators);
-          execute(table, targets).each(postExecute(table));
-        })
-      );
+      performActionOnSelection((table, startCell) => {
+        const generators = TableFill.paste(SugarElement.fromDom(editor.getDoc()));
+        const targets = TableTargets.pasteRows(selections, startCell, clonedRows, generators);
+        execute(table, targets).each(postExecute(table));
+      });
     });
 
   // Register action commands

@@ -1,5 +1,5 @@
 import { context, describe, it } from '@ephox/bedrock-client';
-import { TinyHooks, TinySelections } from '@ephox/mcagar';
+import { TinyAssertions, TinyHooks, TinySelections } from '@ephox/mcagar';
 import { PlatformDetection } from '@ephox/sand';
 import { assert } from 'chai';
 import Editor from 'tinymce/core/api/Editor';
@@ -65,23 +65,19 @@ describe('browser.tinymce.plugins.table.command.ModifyClassesCommandsTest', () =
       it('TINY-7163: Can be toggled on', () => {
         const editor = hook.editor();
         editor.setContent(contentWithoutClass);
-
         TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
         execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
-
-        assert.equal(editor.getContent(), contentWithClass);
+        TinyAssertions.assertContent(editor, contentWithClass);
       });
 
       it('TINY-7163: Can be toggled off', () => {
         const editor = hook.editor();
         editor.setContent(contentWithClass);
-
         TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
         execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
-
-        assert.equal(editor.getContent(), contentWithoutClass);
+        TinyAssertions.assertContent(editor, contentWithoutClass);
       });
     });
 
@@ -111,23 +107,19 @@ describe('browser.tinymce.plugins.table.command.ModifyClassesCommandsTest', () =
       it('TINY-7163: Can be toggled on', () => {
         const editor = hook.editor();
         editor.setContent(contentWithoutClass);
-
         TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
         execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
-
-        assert.equal(editor.getContent(), contentWithClass);
+        TinyAssertions.assertContent(editor, contentWithClass);
       });
 
       it('TINY-7163: Can be toggled off', () => {
         const editor = hook.editor();
         editor.setContent(contentWithClass);
-
         TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
         execCmdAndAssertEvent(editor, 'mceTableCellToggleClass', false, 'a');
-
-        assert.equal(editor.getContent(), contentWithoutClass);
+        TinyAssertions.assertContent(editor, contentWithoutClass);
       });
     });
   });
@@ -159,23 +151,19 @@ describe('browser.tinymce.plugins.table.command.ModifyClassesCommandsTest', () =
       it('TINY-7163: Can be toggled on', () => {
         const editor = hook.editor();
         editor.setContent(contentWithoutClass);
-
         TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
         execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
-
-        assert.equal(editor.getContent(), contentWithClass);
+        TinyAssertions.assertContent(editor, contentWithClass);
       });
 
       it('TINY-7163: Can be toggled off', () => {
         const editor = hook.editor();
         editor.setContent(contentWithClass);
-
         TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
         execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
-
-        assert.equal(editor.getContent(), contentWithoutClass);
+        TinyAssertions.assertContent(editor, contentWithoutClass);
       });
     });
 
@@ -203,39 +191,33 @@ describe('browser.tinymce.plugins.table.command.ModifyClassesCommandsTest', () =
       );
 
       context('Can be toggled on', () => {
-        const onPathSelection = (startPath: number[], startOffset: number, endPath: number[], endOffset: number) => {
+        const testWithSelection = (startPath: number[], startOffset: number, endPath: number[], endOffset: number) => {
           const editor = hook.editor();
           editor.setContent(contentWithoutClass);
-
           TinySelections.setSelection(editor, startPath, startOffset, endPath, endOffset);
-
           execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
-
-          assert.equal(editor.getContent(), contentWithClass);
+          TinyAssertions.assertContent(editor, contentWithClass);
         };
 
         it('TINY-7163: When the first cell is selected', () => {
-          onPathSelection([ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
+          testWithSelection([ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
         });
 
         it('TINY-7163: When the second cell is selected', () => {
-          onPathSelection([ 0, 0, 0 ], 1, [ 0, 0, 0 ], 2);
+          testWithSelection([ 0, 0, 0 ], 1, [ 0, 0, 0 ], 2);
         });
 
         it('TINY-7163: When both cells are selected', () => {
-          onPathSelection([ 0, 0, 0 ], 0, [ 0, 0, 0 ], 2);
+          testWithSelection([ 0, 0, 0 ], 0, [ 0, 0, 0 ], 2);
         });
       });
 
       it('TINY-7163: Can be toggled off', () => {
         const editor = hook.editor();
         editor.setContent(contentWithClass);
-
         TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
-
         execCmdAndAssertEvent(editor, 'mceTableToggleClass', false, 'a');
-
-        assert.equal(editor.getContent(), contentWithoutClass);
+        TinyAssertions.assertContent(editor, contentWithoutClass);
       });
     });
   });
