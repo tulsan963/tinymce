@@ -8,7 +8,7 @@
 import { Selections } from '@ephox/darwin';
 import { Arr, Fun, Obj, Optional, Type } from '@ephox/katamari';
 import { CopyCols, CopyRows, Sizes, TableFill, TableLookup } from '@ephox/snooker';
-import { Class, Insert, Remove, Replication, SugarElement } from '@ephox/sugar';
+import { Insert, Remove, Replication, SugarElement } from '@ephox/sugar';
 import Editor from 'tinymce/core/api/Editor';
 import { enforceNone, enforcePercentage, enforcePixels } from '../actions/EnforceUnit';
 import { insertTableWithDataValidation } from '../actions/InsertTable';
@@ -76,7 +76,7 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
 
   const toggleTableClass = (_ui: boolean, clazz: string) => {
     performActionOnSelection((table) => {
-      Class.toggle(table, clazz);
+      editor.formatter.toggle('tableclass', { value: clazz }, table.dom);
       Events.fireTableModified(editor, table.dom, Events.styleModified);
     });
   };
@@ -84,7 +84,9 @@ const registerCommands = (editor: Editor, actions: TableActions, cellSelection: 
   const toggleTableCellClass = (_ui: boolean, clazz: string) => {
     performActionOnSelection((table, startCell) => {
       const cells = TableSelection.getCellsFromSelection(startCell, selections);
-      Arr.each(cells, (value) => Class.toggle(value, clazz));
+      Arr.each(cells, (value) => {
+        editor.formatter.toggle('tablecellclass', { value: clazz }, value.dom);
+      });
       Events.fireTableModified(editor, table.dom, Events.styleModified);
     });
   };
