@@ -1,7 +1,7 @@
 import { UiFinder, Waiter } from '@ephox/agar';
 import { context, describe, it } from '@ephox/bedrock-client';
 import { TinyHooks, TinySelections, TinyUiActions } from '@ephox/mcagar';
-import { SugarElement } from '@ephox/sugar';
+import { SugarBody } from '@ephox/sugar';
 import { assert } from 'chai';
 import Editor from 'tinymce/core/api/Editor';
 import { EditorEvent } from 'tinymce/core/api/util/EventDispatcher';
@@ -47,7 +47,7 @@ describe('browser.tinymce.plugins.table.command.ModifyClassesCommandsTest', () =
 
       TinySelections.setSelection(editor, [ 0, 0, 0 ], 0, [ 0, 0, 0 ], 1);
 
-      const sugarContainer = SugarElement.fromDom(editor.getContainer());
+      const sugarContainer = SugarBody.body();
 
       TinyUiActions.clickOnToolbar(editor, 'button[title="Table styles"]');
 
@@ -55,6 +55,9 @@ describe('browser.tinymce.plugins.table.command.ModifyClassesCommandsTest', () =
         UiFinder.exists(sugarContainer, '.tox-menu');
         UiFinder.notExists(sugarContainer, '.tox-collection__item--enabled');
       });
+
+      TinyUiActions.clickOnToolbar(editor, 'button[title="Table styles"]'); // Close
+      TinyUiActions.clickOnToolbar(editor, 'button[title="Table styles"]'); // Re-open
 
       editor.execCommand('mceTableToggleClass', false, 'a');
       assert.lengthOf(events, 1, 'Command executed successfully.');
