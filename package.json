@@ -28,7 +28,7 @@
     "browser-test-manual": "yarn -s grunt browser-manual",
     "phantomjs-test": "yarn -s grunt phantomjs-auto",
     "phantomjs-test-manual": "yarn -s grunt phantomjs-manual",
-    "bedrock": "bedrock --customRoutes modules/tinymce/src/core/test/json/routes.json --polyfills Promise Symbol",
+    "bedrock": "bedrock --customRoutes modules/tinymce-tests/src/core/json/routes.json --polyfills Promise Symbol",
     "test-one": "yarn tsc && yarn bedrock-auto -b chrome-headless -f"
   },
   "devDependencies": {

@@ -20,6 +20,7 @@
     { "path": "../agar" },
     { "path": "../katamari" },
     { "path": "../sand" },
-    { "path": "../sugar" }
+    { "path": "../sugar" },
+    { "path": "../tinymce" }
   ]
 }

@@ -4,7 +4,7 @@
   "useWorkspaces": true,
   "command":  {
     "publish": {
-      "ignoreChanges": ["modules/tinymce/**"],
+      "ignoreChanges": ["modules/tinymce/**", "modules/tinymce-tests/**"],
       "push": false
     },
     "exec": {

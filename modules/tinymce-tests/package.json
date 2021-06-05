@@ -1,0 +1,24 @@
+{
+  "name": "@tinymce/tests",
+  "version": "5.9.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tinymce/tinymce"
+  },
+  "description": "Tests for the TinyMCE rich text editor",
+  "author": "Tiny Technologies",
+  "bugs": {
+    "url": "https://github.com/tinymce/tinymce/issues"
+  },
+  "license": "LGPL-2.1",
+  "engines": {
+    "node": ">=0.10.26"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "devDependencies": {
+    "tinymce": "^5.9.0"
+  }
+}

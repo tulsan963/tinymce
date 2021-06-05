@@ -23,7 +23,8 @@
     { "path": "modules/sand" },
     { "path": "modules/snooker" },
     { "path": "modules/sugar" },
-    { "path": "modules/tinymce" }
+    { "path": "modules/tinymce" },
+    { "path": "modules/tinymce-tests" }
   ],
 
   "compilerOptions": {

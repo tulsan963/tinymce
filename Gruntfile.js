@@ -43,13 +43,13 @@ const filterChangesNot = (changes, badTests) => {
  */
 const testFolders = (tests, auto) => tests.flatMap((test) => {
   const testTypes = ['atomic', 'browser', 'phantom'].concat(auto ? ['webdriver'] : []);
-  const bases = test.name === "tinymce" ? ["src/*/test/ts", "src/*/*/test/ts"] : ["src/test/ts"];
+  const bases = test.name === "@tinymce/tests" ? ["src/*/ts", "src/*/*/ts"] : ["src/test/ts"];
   return bases.flatMap(base => testTypes.map(tt => `${test.location}/${base}/${tt}/**/*Test.ts`));
 });
 
 const bedrockDefaults = {
   config: 'tsconfig.json',
-  customRoutes: 'modules/tinymce/src/core/test/json/routes.json',
+  customRoutes: 'modules/tinymce-tests/src/core/json/routes.json',
   overallTimeout: 180000,
   singleTimeout: 60000,
   polyfills: [ 'Promise', 'Symbol' ],
