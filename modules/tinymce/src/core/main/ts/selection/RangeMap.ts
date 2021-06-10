@@ -23,7 +23,7 @@ const getCaretElement = (editor: Editor): Optional<Node> =>
     .bind((rng) => {
       const root = editor.getBody();
       const atStartOfNode = rng.startContainer === root && rng.startOffset === 0;
-      return atStartOfNode ? Optional.none() : Optional.from(editor.selection.getStart(true));
+      return atStartOfNode ? Optional.none() : Optional.from(editor.selection.getStart(true) as Node);
     });
 
 export const mapRange = <T>(editor: Editor, mapper: (node: SugarElement<Element>) => T): Optional<T> =>

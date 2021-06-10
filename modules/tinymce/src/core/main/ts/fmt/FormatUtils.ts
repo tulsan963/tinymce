@@ -176,17 +176,22 @@ const getParents = (dom: DOMUtils, node: Node, selector?: string) => {
   return dom.getParents(node, selector, dom.getRoot());
 };
 
-const isVariableFormatName = (editor: Editor, formatName: string): boolean => {
-  const hasVariableValues = (format: Format) => {
-    const isVariableValue = (val: string): boolean => val.length > 1 && val.charAt(0) === '%';
+const isVariableValue = (val: FormatAttrOrStyleValue): boolean => {
+  if (Type.isFunction(val)) {
+    return true;
+  } else {
+    return val.length > 1 && val.charAt(0) === '%';
+  }
+};
+
+const isVariableFormatName = (editor: Editor, formatName: string): boolean =>
+  Arr.exists(editor.formatter.get(formatName), (format: Format) => {
     return Arr.exists([ 'styles', 'attributes' ], (key: 'styles' | 'attributes') =>
       Obj.get(format, key).exists((field) => {
         const fieldValues = Type.isArray(field) ? field : Obj.values(field);
         return Arr.exists(fieldValues, isVariableValue);
       }));
-  };
-  return Arr.exists(editor.formatter.get(formatName), hasVariableValues);
-};
+  });
 
 /**
  * Checks if the two formats are similar based on the format type, attributes, styles and classes

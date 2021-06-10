@@ -26,7 +26,7 @@ const trimEmptyTextNode = (dom: DOMUtils, node: Node) => {
 };
 
 const deleteContentAndShowCaret = (editor: Editor, range: Range, node: Node, direction: HDirection, forward: boolean, peekCaretPosition: CaretPosition) => {
-  FakeCaretUtils.showCaret(direction, editor, peekCaretPosition.getNode(!forward) as Element, forward, true).each((caretRange) => {
+  FakeCaretUtils.showCaret(direction, editor, peekCaretPosition.getNode(!forward) as HTMLElement, forward, true).each((caretRange) => {
     // Delete the selected content
     if (range.collapsed) {
       const deleteRange = range.cloneRange();

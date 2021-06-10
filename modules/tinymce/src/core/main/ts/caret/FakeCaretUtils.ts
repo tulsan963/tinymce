@@ -15,17 +15,17 @@ import { isInlineFakeCaretTarget } from './FakeCaret';
 const isContentEditableTrue = NodeType.isContentEditableTrue;
 const isContentEditableFalse = NodeType.isContentEditableFalse;
 
-const showCaret = (direction: number, editor: Editor, node: Element, before: boolean, scrollIntoView: boolean): Optional<Range> =>
+const showCaret = (direction: number, editor: Editor, node: HTMLElement, before: boolean, scrollIntoView: boolean): Optional<Range> =>
   // TODO: Figure out a better way to handle this dependency
   Optional.from(editor._selectionOverrides.showCaret(direction, node, before, scrollIntoView));
 
-const getNodeRange = (node: Element): Range => {
+const getNodeRange = (node: Node): Range => {
   const rng = node.ownerDocument.createRange();
   rng.selectNode(node);
   return rng;
 };
 
-const selectNode = (editor: Editor, node: Element): Optional<Range> => {
+const selectNode = (editor: Editor, node: Node): Optional<Range> => {
   const e = editor.fire('BeforeObjectSelected', { target: node });
   if (e.isDefaultPrevented()) {
     return Optional.none();

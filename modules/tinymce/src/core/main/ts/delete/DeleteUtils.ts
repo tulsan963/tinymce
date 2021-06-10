@@ -13,14 +13,18 @@ import CaretPosition from '../caret/CaretPosition';
 import { isListItem, isTextBlock } from '../dom/ElementType';
 import * as InlineUtils from '../keyboard/InlineUtils';
 
-const isBeforeRoot = (rootNode: SugarElement<any>) => (elm: SugarElement<any>): boolean =>
+const isBeforeRoot = (rootNode: SugarElement<Node>) => (elm: SugarElement<Node>): boolean =>
   Compare.eq(rootNode, SugarElement.fromDom(elm.dom.parentNode));
 
-const getParentBlock = (rootNode: SugarElement<Node>, elm: SugarElement<Node>): Optional<SugarElement<Node>> =>
-  (Compare.contains(rootNode, elm)
-    ? PredicateFind.closest(elm, (element) => isTextBlock(element) || isListItem(element), isBeforeRoot(rootNode))
-    : Optional.none()
-  );
+const getParentBlock = (rootNode: SugarElement<Node>, elm: SugarElement<Node>): Optional<SugarElement<HTMLElement>> => {
+  if (Compare.contains(rootNode, elm)) {
+    return PredicateFind.closest(elm, (element): element is SugarElement<HTMLElement> => {
+      return isTextBlock(element) || isListItem(element);
+    }, isBeforeRoot(rootNode));
+  } else {
+    return Optional.none();
+  }
+};
 
 const placeCaretInEmptyBody = (editor: Editor) => {
   const body = editor.getBody();

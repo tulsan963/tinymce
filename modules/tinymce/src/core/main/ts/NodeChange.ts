@@ -99,7 +99,7 @@ class NodeChange {
    */
   public nodeChanged(args?) {
     const selection = this.editor.selection;
-    let node, parents, root;
+    let node, root;
 
     // Fix for bug #1896577 it seems that this can not be fired while the editor is loading
     if (this.editor.initialized && selection && !Settings.shouldDisableNodeChange(this.editor) && !this.editor.mode.isReadOnly()) {
@@ -113,7 +113,7 @@ class NodeChange {
       }
 
       // Get parents and add them to object
-      parents = [];
+      const parents: HTMLElement[] = [];
       this.editor.dom.getParent(node, (node) => {
         if (node === root) {
           return true;

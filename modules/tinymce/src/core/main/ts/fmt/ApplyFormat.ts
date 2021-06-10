@@ -242,7 +242,7 @@ const applyFormat = (ed: Editor, name: string, vars?: FormatVars, node?: Node | 
     // Apply formats to links as well to get the color of the underline to change as well
     if (format.links === true) {
       each(newWrappers, (node) => {
-        const process = (node: Element) => {
+        const process = (node: ChildNode) => {
           if (node.nodeName === 'A') {
             setElementFormat(node, format);
           }

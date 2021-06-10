@@ -98,10 +98,11 @@ const registerEvents = (editorManager: EditorManager, e: { editor: Editor }) => 
       const activeEditor = editorManager.activeEditor;
 
       if (activeEditor) {
-        SugarShadowDom.getOriginalEventTarget(e).each((target: Element) => {
-          if (target.ownerDocument === document) {
+        SugarShadowDom.getOriginalEventTarget(e).each((target) => {
+          const castTarget = target as Node;
+          if (castTarget.ownerDocument === document) {
             // Fire a blur event if the element isn't a UI element
-            if (target !== document.body && !isUIElement(activeEditor, target) && editorManager.focusedEditor === activeEditor) {
+            if (castTarget !== document.body && !isUIElement(activeEditor, castTarget) && editorManager.focusedEditor === activeEditor) {
               activeEditor.fire('blur', { focusedEditor: null });
               editorManager.focusedEditor = null;
             }

@@ -29,7 +29,12 @@ export interface LocationAdt {
   log: (label: string) => void;
 }
 
-const Location = Adt.generate([
+const Location: {
+  before: (element: Node) => LocationAdt;
+  start: (element: Node) => LocationAdt;
+  end: (element: Node) => LocationAdt;
+  after: (element: Node) => LocationAdt;
+} = Adt.generate([
   { before: [ 'element' ] },
   { start: [ 'element' ] },
   { end: [ 'element' ] },
@@ -62,7 +67,7 @@ const start = (isInlineTarget: (node: Node) => boolean, rootNode: Node, pos: Car
   const nPos = InlineUtils.normalizeBackwards(pos);
   return findInsideRootInline(isInlineTarget, rootNode, nPos).bind((inline) => {
     const prevPos = CaretFinder.prevPosition(inline, nPos);
-    return prevPos.isNone() ? Optional.some(Location.start(inline)) : Optional.none();
+    return prevPos.isNone() ? Optional.some(Location.start(inline)) : Optional.none<LocationAdt>();
   });
 };
 
@@ -70,7 +75,7 @@ const end = (isInlineTarget: (node: Node) => boolean, rootNode: Node, pos: Caret
   const nPos = InlineUtils.normalizeForwards(pos);
   return findInsideRootInline(isInlineTarget, rootNode, nPos).bind((inline) => {
     const nextPos = CaretFinder.nextPosition(inline, nPos);
-    return nextPos.isNone() ? Optional.some(Location.end(inline)) : Optional.none();
+    return nextPos.isNone() ? Optional.some(Location.end(inline)) : Optional.none<LocationAdt>();
   });
 };
 

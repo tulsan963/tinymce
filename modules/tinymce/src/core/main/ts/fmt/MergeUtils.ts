@@ -16,7 +16,7 @@ import * as FormatUtils from './FormatUtils';
 
 const each = Tools.each;
 
-const isElementNode = (node: Node) =>
+const isElementNode = (node: Node): node is Element =>
   NodeType.isElement(node) && !Bookmarks.isBookmarkNode(node) && !isCaretNode(node) && !NodeType.isBogus(node);
 
 const findElementSibling = (node: Node, siblingName: 'nextSibling' | 'previousSibling') => {
@@ -90,7 +90,7 @@ const clearChildStyles = (dom: DOMUtils, format, node: Node) => {
   }
 };
 
-const processChildElements = (node: Node, filter: (node: Node) => boolean, process: (node: Node) => void) => {
+const processChildElements = (node: Node, filter: (node: Node) => boolean, process: (node: Element) => void) => {
   each(node.childNodes, (node) => {
     if (isElementNode(node)) {
       if (filter(node)) {

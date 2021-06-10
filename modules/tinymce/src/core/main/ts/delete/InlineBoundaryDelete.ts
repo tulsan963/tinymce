@@ -73,14 +73,14 @@ const backspaceDeleteCollapsed = (editor: Editor, caret: Cell<Text>, forward: bo
 
   return fromLocation.bind((location) => {
     if (forward) {
-      return location.fold(
+      return location.fold<Optional<BoundaryLocation.LocationAdt>>(
         Fun.constant(Optional.some(BoundaryLocation.inside(location))), // Before
         Optional.none, // Start
         Fun.constant(Optional.some(BoundaryLocation.outside(location))), // End
         Optional.none  // After
       );
     } else {
-      return location.fold(
+      return location.fold<Optional<BoundaryLocation.LocationAdt>>(
         Optional.none, // Before
         Fun.constant(Optional.some(BoundaryLocation.outside(location))), // Start
         Optional.none, // End
@@ -103,7 +103,7 @@ const backspaceDeleteCollapsed = (editor: Editor, caret: Cell<Text>, forward: bo
           }
         })
       ).orThunk(() => toLocation.bind((_) =>
-        toPosition.map((to) => {
+        toPosition.map((to): boolean => {
           if (forward) {
             deleteFromTo(editor, caret, from, to);
           } else {

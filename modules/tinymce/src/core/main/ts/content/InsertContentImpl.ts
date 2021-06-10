@@ -39,7 +39,7 @@ const isTableCellContentSelected = (dom: DOMUtils, rng: Range, cell: Node | null
   }
 };
 
-const validInsertion = (editor: Editor, value: string, parentNode: Element): void => {
+const validInsertion = (editor: Editor, value: string, parentNode: HTMLElement): void => {
   // Should never insert content into bogus elements, since these can
   // be resize handles or similar
   if (parentNode.getAttribute('data-mce-bogus') === 'all') {

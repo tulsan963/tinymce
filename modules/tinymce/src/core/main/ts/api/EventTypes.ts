@@ -20,7 +20,7 @@ export type SetContentEvent = SetContentArgs & { paste?: boolean; selection?: bo
 
 export interface NewBlockEvent { newBlock: Element }
 
-export interface NodeChangeEvent { element: Element; parents: Node[]; selectionChange?: boolean; initial?: boolean }
+export interface NodeChangeEvent { element: Element; parents: HTMLElement[]; selectionChange?: boolean; initial?: boolean }
 
 export interface ObjectResizeEvent { target: HTMLElement; width: number; height: number; origin: string }
 

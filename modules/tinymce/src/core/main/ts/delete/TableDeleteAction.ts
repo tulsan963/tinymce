@@ -47,7 +47,11 @@ const tableSelection = (rng: TableCellRng, table: SugarElement<HTMLTableElement>
   cells
 });
 
-const deleteAction = Adt.generate([
+const deleteAction: {
+  removeTable: (element: SugarElement<HTMLTableElement>) => DeleteActionAdt;
+  emptyCells: (cells: SugarElement<HTMLTableCellElement>[]) => DeleteActionAdt;
+  deleteCellSelection: (rng: Range, cell: SugarElement<HTMLTableCellElement>) => DeleteActionAdt;
+} = Adt.generate([
   { removeTable: [ 'element' ] },
   { emptyCells: [ 'cells' ] },
   { deleteCellSelection: [ 'rng', 'cell' ] }
@@ -138,7 +142,7 @@ const getAction = (tableSelection: TableSelection): Optional<DeleteActionAdt> =>
       return selected.length === cells.length ? deleteAction.removeTable(tableSelection.table) : deleteAction.emptyCells(selected);
     });
 
-export const getActionFromCells = (cells: SugarElement<Element>[]): DeleteActionAdt => deleteAction.emptyCells(cells);
+export const getActionFromCells = (cells: SugarElement<HTMLTableCellElement>[]): DeleteActionAdt => deleteAction.emptyCells(cells);
 export const getActionFromRange = (root: SugarElement, rng: Range): Optional<DeleteActionAdt> => {
   const isRoot = isRootFromElement(root);
   const optCellRng = getCellRng(rng, isRoot);

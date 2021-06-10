@@ -19,13 +19,13 @@ import * as DeleteUtils from './DeleteUtils';
 
 export interface DeleteActionAdt {
   fold: <T> (
-    remove: (element: Element) => T,
-    moveToElement: (element: Element) => T,
+    remove: (element: Node) => T,
+    moveToElement: (element: Node) => T,
     moveToPosition: (position: CaretPosition) => T,
   ) => T;
   match: <T> (branches: {
-    remove: (element: Element) => T;
-    moveToElement: (element: Element) => T;
+    remove: (element: Node) => T;
+    moveToElement: (element: Node) => T;
     moveToPosition: (position: CaretPosition) => T;
   }) => T;
   log: (label: string) => void;
@@ -33,7 +33,11 @@ export interface DeleteActionAdt {
 
 const isCompoundElement = (node: Node) => ElementType.isTableCell(SugarElement.fromDom(node)) || ElementType.isListItem(SugarElement.fromDom(node));
 
-const DeleteAction = Adt.generate([
+const DeleteAction: {
+  remove: (element: Node) => DeleteActionAdt;
+  moveToElement: (element: Node) => DeleteActionAdt;
+  moveToPosition: (position: CaretPosition) => DeleteActionAdt;
+} = Adt.generate([
   { remove: [ 'element' ] },
   { moveToElement: [ 'element' ] },
   { moveToPosition: [ 'position' ] }

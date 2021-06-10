@@ -6,10 +6,9 @@
  */
 
 import { Cell, Optional } from '@ephox/katamari';
-import { Bookmark } from '../bookmark/BookmarkTypes';
 import * as Rtc from '../Rtc';
 import { addKeyboardShortcuts, registerEvents } from '../undo/Setup';
-import { Index, Locks, UndoLevel, UndoManager } from '../undo/UndoManagerTypes';
+import { Index, Locks, UndoBookmark, UndoLevel, UndoManager } from '../undo/UndoManagerTypes';
 import Editor from './Editor';
 
 /**
@@ -18,7 +17,7 @@ import Editor from './Editor';
  * @class tinymce.UndoManager
  */
 const UndoManager = (editor: Editor): UndoManager => {
-  const beforeBookmark: Cell<Optional<Bookmark>> = Cell(Optional.none());
+  const beforeBookmark: UndoBookmark = Cell(Optional.none());
   const locks: Locks = Cell(0);
   const index: Index = Cell(0);
 

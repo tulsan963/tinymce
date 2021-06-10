@@ -7,7 +7,7 @@
 
 import { Cell, Optional } from '@ephox/katamari';
 import { EditorEvent } from '../api/util/EventDispatcher';
-import { Bookmark } from '../bookmark/BookmarkTypes';
+import { Bookmark, IndexBookmark, PathBookmark } from '../bookmark/BookmarkTypes';
 
 export const enum UndoLevelType {
   Fragmented = 'fragmented',
@@ -42,4 +42,4 @@ export type Index = Cell<number>;
 
 export type Locks = Cell<number>;
 
-export type UndoBookmark = Cell<Optional<Bookmark>>;
+export type UndoBookmark = Cell<Optional<IndexBookmark | PathBookmark>>;

@@ -13,10 +13,12 @@ import * as SelectionUtils from './SelectionUtils';
 import * as SimpleTableModel from './SimpleTableModel';
 import * as TableCellSelection from './TableCellSelection';
 
-const findParentListContainer = (parents: SugarElement[]): Optional<SugarElement<HTMLLIElement | HTMLOListElement>> =>
-  Arr.find(parents, (elm) => SugarNode.name(elm) === 'ul' || SugarNode.name(elm) === 'ol');
+const findParentListContainer = (parents: SugarElement<Node>[]): Optional<SugarElement<HTMLUListElement | HTMLOListElement>> =>
+  Arr.find(parents, (elm): elm is SugarElement<HTMLUListElement | HTMLOListElement> =>
+    SugarNode.name(elm) === 'ul' || SugarNode.name(elm) === 'ol'
+  );
 
-const getFullySelectedListWrappers = (parents: SugarElement<Node>[], rng: Range) =>
+const getFullySelectedListWrappers = (parents: SugarElement<Node>[], rng: Range): SugarElement<HTMLElement>[] =>
   Arr.find(parents, (elm) => SugarNode.name(elm) === 'li' && SelectionUtils.hasAllContentsSelected(elm, rng)).fold(
     Fun.constant([]),
     (_li) =>

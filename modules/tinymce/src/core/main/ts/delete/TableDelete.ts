@@ -119,7 +119,7 @@ const deleteCaretInsideCaption = (editor: Editor, rootElm: SugarElement<Node>, f
     (to) => isDeleteOfLastCharPos(fromCaption, forward, from, to) ?
       emptyCaretCaption(editor, fromCaption) :
       validateCaretCaption(rootElm, fromCaption, to)
-  ).or(Optional.some(true));
+  ).or(Optional.some<boolean>(true));
 
 const deleteCaretCells = (editor: Editor, forward: boolean, rootElm: SugarElement<Node>, startElm: SugarElement<Node>) => {
   const from = CaretPosition.fromRangeStart(editor.selection.getRng());

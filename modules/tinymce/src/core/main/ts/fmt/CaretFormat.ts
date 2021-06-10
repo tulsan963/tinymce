@@ -170,7 +170,7 @@ const insertFormatNodesIntoCaretContainer = (formatNodes: Node[], caretContainer
   return appendNode(innerMostFormatNode, innerMostFormatNode.ownerDocument.createTextNode(ZWSP));
 };
 
-const cleanFormatNode = (editor: Editor, caretContainer: Node, formatNode: Node, name: string, vars: FormatVars, similar: boolean): Optional<Node> => {
+const cleanFormatNode = (editor: Editor, caretContainer: Node, formatNode: HTMLElement, name: string, vars: FormatVars, similar: boolean): Optional<HTMLElement> => {
   const formatter = editor.formatter;
   const dom = editor.dom;
 
@@ -183,7 +183,7 @@ const cleanFormatNode = (editor: Editor, caretContainer: Node, formatNode: Node,
   // If more than one format is present, then there's additional formats that should be retained. So clone the node,
   // remove the format and then return cleaned format node
   if (uniqueFormats.length > 0) {
-    const clonedFormatNode = formatNode.cloneNode(false);
+    const clonedFormatNode = formatNode.cloneNode(false) as HTMLElement;
     dom.add(caretContainer, clonedFormatNode);
     formatter.remove(name, vars, clonedFormatNode, similar);
     dom.remove(clonedFormatNode);
@@ -248,7 +248,7 @@ const applyCaretFormat = (editor: Editor, name: string, vars: FormatVars) => {
 const removeCaretFormat = (editor: Editor, name: string, vars: FormatVars, similar: boolean) => {
   const dom = editor.dom;
   const selection = editor.selection;
-  let hasContentAfter: boolean, node: Node, formatNode: Node;
+  let hasContentAfter: boolean, node: Node, formatNode: HTMLElement;
   const parents: Node[] = [];
   const rng = selection.getRng();
 
@@ -266,7 +266,9 @@ const removeCaretFormat = (editor: Editor, name: string, vars: FormatVars, simil
 
   while (node) {
     if (MatchFormat.matchNode(editor, node, name, vars, similar)) {
-      formatNode = node;
+      // If a node matches the format we know it's a HTMLElement
+      // as formats can't be applied to Text, Comment, etc...
+      formatNode = node as HTMLElement;
       break;
     }
 

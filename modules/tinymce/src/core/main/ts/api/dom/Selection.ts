@@ -98,7 +98,7 @@ interface EditorSelection {
     parents: Element[];
   }) => void) => { unbind: () => void };
   getScrollContainer: () => HTMLElement;
-  scrollIntoView: (elm: Element, alignToTop?: boolean) => void;
+  scrollIntoView: (elm: HTMLElement, alignToTop?: boolean) => void;
   placeCaretAt: (clientX: number, clientY: number) => void;
   getBoundingClientRect: () => ClientRect;
   destroy: () => void;

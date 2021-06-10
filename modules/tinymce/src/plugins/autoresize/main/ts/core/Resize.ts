@@ -121,7 +121,7 @@ const resize = (editor: Editor, oldSize: Cell<number>) => {
 
     // Ensure the selected node is in view, as it's potentially out of view after resizing the editor
     if (editor.hasFocus()) {
-      editor.selection.scrollIntoView(editor.selection.getNode());
+      editor.selection.scrollIntoView(editor.selection.getNode() as HTMLElement);
     }
 
     // WebKit doesn't decrease the size of the body element until the iframe gets resized

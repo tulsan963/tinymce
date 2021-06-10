@@ -3,7 +3,7 @@ import { Obj, Optional } from '@ephox/katamari';
 import { KAssert } from '@ephox/katamari-assertions';
 import { assert } from 'chai';
 
-import { Base64Extract, extractBase64DataUris, parseDataUri, restoreDataUris, UriMap } from 'tinymce/core/html/Base64Uris';
+import { Base64Extract, Base64UriParts, extractBase64DataUris, parseDataUri, restoreDataUris, UriMap } from 'tinymce/core/html/Base64Uris';
 
 describe('atomic.tinymce.core.html.Base64UrisTest', () => {
   const replacePrefix = (value: string, prefix: string) => value.replace(/\$prefix/g, prefix);
@@ -119,7 +119,7 @@ describe('atomic.tinymce.core.html.Base64UrisTest', () => {
     KAssert.eqOptional('Plain text mime', Optional.some({ type: 'image/png', data: 'R0/yw==' }), parseDataUri('data:image/png;base64,R0/yw=='));
     KAssert.eqOptional('Mime with dash', Optional.some({ type: 'image/x-icon', data: 'R1/yw==' }), parseDataUri('data:image/x-icon;base64,R1/yw=='));
     KAssert.eqOptional('Mime with plus', Optional.some({ type: 'image/svg+xml', data: 'R2/yw==' }), parseDataUri('data:image/svg+xml;base64,R2/yw=='));
-    KAssert.eqOptional('Data uri without mime', Optional.none(), parseDataUri('data:base64,R3/yw=='));
-    KAssert.eqOptional('Data uri without base64', Optional.none(), parseDataUri('data:image/svg+xml,R4/yw=='));
+    KAssert.eqOptional('Data uri without mime', Optional.none<Base64UriParts>(), parseDataUri('data:base64,R3/yw=='));
+    KAssert.eqOptional('Data uri without base64', Optional.none<Base64UriParts>(), parseDataUri('data:image/svg+xml,R4/yw=='));
   });
 });

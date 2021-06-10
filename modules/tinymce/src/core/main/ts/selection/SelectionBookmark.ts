@@ -46,7 +46,7 @@ const nativeRangeToSelectionRange = (r: Range): SimRange =>
 
 const readRange = (win: Window): Optional<SimRange> => {
   const selection = win.getSelection();
-  const rng = !selection || selection.rangeCount === 0 ? Optional.none() : Optional.from(selection.getRangeAt(0));
+  const rng = !selection || selection.rangeCount === 0 ? Optional.none<Range>() : Optional.from(selection.getRangeAt(0));
   return rng.map(nativeRangeToSelectionRange);
 };
 

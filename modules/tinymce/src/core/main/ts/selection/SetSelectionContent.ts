@@ -29,7 +29,7 @@ const removeEmpty = (text: SugarElement<Text>): Optional<SugarElement<Text>> => 
   }
 };
 
-const walkPastBookmark = (node: Optional<SugarElement<Node>>, start: boolean): Optional<SugarElement<Node>> =>
+const walkPastBookmark = (node: Optional<SugarElement<ChildNode>>, start: boolean): Optional<SugarElement<ChildNode>> =>
   node.filter((elm) => BookmarkManager.isBookmarkNode(elm.dom))
     .bind(start ? Traverse.nextSibling : Traverse.prevSibling);
 
@@ -57,7 +57,7 @@ const normalizeTextIfRequired = (inner: SugarElement<Text>, start: boolean) => {
   });
 };
 
-const mergeAndNormalizeText = (outerNode: Optional<SugarElement<Text>>, innerNode: Optional<SugarElement<Node>>, rng: Range, start: boolean) => {
+const mergeAndNormalizeText = (outerNode: Optional<SugarElement<Text>>, innerNode: Optional<SugarElement<ChildNode>>, rng: Range, start: boolean) => {
   outerNode.bind((outer) => {
     // Normalize the text outside the inserted content
     const normalizer = start ? MergeText.normalizeWhitespaceBefore : MergeText.normalizeWhitespaceAfter;

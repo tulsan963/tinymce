@@ -22,7 +22,7 @@ import EditorSelection from './Selection';
 
 interface ControlSelection {
   isResizable: (elm: Element) => boolean;
-  showResizeRect: (elm: Element) => void;
+  showResizeRect: (elm: HTMLElement) => void;
   hideResizeRect: () => void;
   updateResizeRect: (evt: EditorEvent<any>) => void;
   destroy: () => void;

@@ -30,7 +30,7 @@ export enum VDirection {
 }
 
 type PosPredicate = (rect1: ClientRect.ClientRect, rect2: ClientRect.ClientRect) => boolean;
-type RectPredicate = (rect: ClientRect.ClientRect) => boolean;
+type RectPredicate = (rect: LineClientRect) => boolean;
 
 const findUntil = (direction: VDirection, root: Node, predicateFn: (node: Node) => boolean, node: Node): void => {
   while ((node = CaretUtils.findNode(node, direction, CaretCandidate.isEditableCaretCandidate, root))) {

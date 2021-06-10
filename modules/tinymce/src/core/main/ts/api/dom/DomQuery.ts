@@ -82,7 +82,7 @@ export interface DomQueryConstructor {
 }
 
 interface DomQuery<T extends Node = Node> extends ArrayLike<T> {
-  init: (selector?: DomQueryInitSelector<T>, context?: Node) => void;
+  init: new <U extends Node>(selector?: DomQueryInitSelector<U>, context?: Node) => DomQuery<U>;
 
   context: T;
   length: number;

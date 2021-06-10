@@ -50,8 +50,8 @@ const findLocation = (editor: Editor, caret: Cell<Text>, forward: boolean) => {
   return location.bind((location) => renderCaretLocation(editor, caret, location));
 };
 
-const toggleInlines = (isInlineTarget: NodePredicate, dom: DOMUtils, elms: Node[]) => {
-  const inlineBoundaries = Arr.map(SelectorFilter.descendants(SugarElement.fromDom(dom.getRoot()), '*[data-mce-selected="inline-boundary"]'), (e) => e.dom);
+const toggleInlines = (isInlineTarget: NodePredicate, dom: DOMUtils, elms: HTMLElement[]) => {
+  const inlineBoundaries = Arr.map(SelectorFilter.descendants<HTMLElement>(SugarElement.fromDom(dom.getRoot()), '*[data-mce-selected="inline-boundary"]'), (e) => e.dom);
   const selectedInlines = Arr.filter(inlineBoundaries, isInlineTarget);
   const targetInlines = Arr.filter(elms, isInlineTarget);
   Arr.each(Arr.difference(selectedInlines, targetInlines), Fun.curry(setSelected, false));
@@ -68,7 +68,7 @@ const safeRemoveCaretContainer = (editor: Editor, caret: Cell<Text>) => {
   }
 };
 
-const renderInsideInlineCaret = (isInlineTarget: NodePredicate, editor: Editor, caret: Cell<Text>, elms: Node[]) => {
+const renderInsideInlineCaret = (isInlineTarget: NodePredicate, editor: Editor, caret: Cell<Text>, elms: HTMLElement[]) => {
   if (editor.selection.isCollapsed()) {
     const inlines = Arr.filter(elms, isInlineTarget);
     Arr.each(inlines, (_inline) => {

@@ -217,7 +217,7 @@ interface DOMUtils {
     <T extends HTMLElement = HTMLElement>(selector: string, scope?: string | Node): T[];
   };
   is: (elm: Node | Node[], selector: string) => boolean;
-  add: (parentElm: RunArguments, name: string | Node, attrs?: Record<string, string | boolean | number>, html?: string | Node, create?: boolean) => HTMLElement;
+  add: (parentElm: RunArguments, name: string | HTMLElement, attrs?: Record<string, string | boolean | number>, html?: string | Node, create?: boolean) => HTMLElement;
   create: {
     <K extends keyof HTMLElementTagNameMap>(name: K, attrs?: Record<string, string | boolean | number>, html?: string | Node): HTMLElementTagNameMap[K];
     (name: string, attrs?: Record<string, string | boolean | number>, html?: string | Node): HTMLElement;
@@ -251,7 +251,7 @@ interface DOMUtils {
   hide: (elm: string | Node | Node[]) => void;
   isHidden: (elm: string | Node) => boolean;
   uniqueId: (prefix?: string) => string;
-  setHTML: (elm: string | Node | Node[], html: string) => void;
+  setHTML: (elm: string | HTMLElement | HTMLElement[], html: string) => void;
   getOuterHTML: (elm: string | Node) => string;
   setOuterHTML: (elm: string | Node | Node[], html: string) => void;
   decode: (text: string) => string;
@@ -362,7 +362,7 @@ const DOMUtils = (doc: Document, settings: Partial<DOMUtilsSettings> = {}): DOMU
       ? doc.getElementById(elm)
       : elm as HTMLElement;
 
-  const $$ = <T extends Node>(elm: string | T | T[] | DomQuery<T>): DomQuery<T | Node> => $(typeof elm === 'string' ? get(elm) : elm);
+  const $$ = <T extends Node>(elm: string | T | T[] | DomQuery<T>): DomQuery<T | HTMLElement> => $(typeof elm === 'string' ? get(elm) : elm);
 
   const getAttrib = (elm: string | Node, name: string, defaultVal?: string): string => {
     let hook, value;
@@ -678,11 +678,11 @@ const DOMUtils = (doc: Document, settings: Partial<DOMUtilsSettings> = {}): DOMU
     });
   };
 
-  const setHTML = (elm: string | Node | Node[], html: string) => {
-    const $elm = $$(elm);
+  const setHTML = (elm: string | HTMLElement | HTMLElement[], html: string) => {
+    const $elm = $$<HTMLElement>(elm);
 
     if (isIE) {
-      $elm.each((i, target: Element) => {
+      $elm.each((i, target) => {
         if ((target as any).canHaveHTML === false) {
           return;
         }
@@ -709,7 +709,7 @@ const DOMUtils = (doc: Document, settings: Partial<DOMUtilsSettings> = {}): DOMU
     }
   };
 
-  const add = (parentElm: RunArguments, name: string | Node, attrs?: Record<string, string | boolean | number>, html?: string | Node, create?: boolean): HTMLElement =>
+  const add = (parentElm: RunArguments, name: string | HTMLElement, attrs?: Record<string, string | boolean | number>, html?: string | Node, create?: boolean): HTMLElement =>
     run(parentElm, (parentElm) => {
       const newElm = typeof name === 'string' ? doc.createElement(name) : name;
       setAttribs(newElm, attrs);
@@ -865,7 +865,7 @@ const DOMUtils = (doc: Document, settings: Partial<DOMUtilsSettings> = {}): DOMU
     $$(elm).addClass(cls);
   };
 
-  const removeClass = (elm: string | Node, cls: string) => {
+  const removeClass = (elm: string | Node | Node[], cls: string) => {
     toggleClass(elm, cls, false);
   };
 

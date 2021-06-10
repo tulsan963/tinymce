@@ -199,7 +199,7 @@ class EventDispatcher<T> {
       const wrappedCallback = {
         func: callback,
         removed: false
-      };
+      } as Binding<T, string>;
 
       if (extra) {
         Tools.extend(wrappedCallback, extra);

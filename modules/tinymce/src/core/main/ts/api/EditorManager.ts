@@ -6,6 +6,7 @@
  */
 
 import { Arr, Obj, Type } from '@ephox/katamari';
+import * as NodeType from '../dom/NodeType';
 import * as ErrorReporter from '../ErrorReporter';
 import * as FocusController from '../focus/FocusController';
 import AddOnManager from './AddOnManager';
@@ -442,9 +443,9 @@ const EditorManager: EditorManager = {
               if (elm) {
                 targets.push(elm);
               } else {
-                each(document.forms, (f: HTMLFormElement) => {
-                  each(f.elements, (e: HTMLFormElement) => {
-                    if (e.name === id) {
+                each(document.forms, (f) => {
+                  each(f.elements, (e) => {
+                    if (NodeType.isElement(e) && (e as HTMLFormElement).name === id) {
                       id = 'mce_editor_' + instanceCounter++;
                       DOM.setAttrib(e, 'id', id);
                       targets.push(e);
