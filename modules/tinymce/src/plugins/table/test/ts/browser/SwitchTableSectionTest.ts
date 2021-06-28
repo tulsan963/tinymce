@@ -1,6 +1,6 @@
 import { UiFinder } from '@ephox/agar';
 import { context, describe, it } from '@ephox/bedrock-client';
-import { TinyAssertions, TinyDom, TinyHooks } from '@ephox/mcagar';
+import { TinyAssertions, TinyDom, TinyHooks } from '@ephox/wrap-mcagar';
 
 import Editor from 'tinymce/core/api/Editor';
 import * as TableSections from 'tinymce/plugins/table/core/TableSections';

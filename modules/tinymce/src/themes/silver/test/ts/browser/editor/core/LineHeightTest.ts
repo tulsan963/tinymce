@@ -1,8 +1,8 @@
 import { UiFinder } from '@ephox/agar';
 import { context, describe, it } from '@ephox/bedrock-client';
 import { Arr, Optional } from '@ephox/katamari';
-import { TinyAssertions, TinyHooks, TinySelections, TinyUiActions } from '@ephox/mcagar';
 import { Attribute } from '@ephox/sugar';
+import { TinyAssertions, TinyHooks, TinySelections, TinyUiActions } from '@ephox/wrap-mcagar';
 import { assert } from 'chai';
 
 import Editor from 'tinymce/core/api/Editor';

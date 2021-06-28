@@ -1,5 +1,5 @@
 import { Pipeline } from '@ephox/agar';
-import { LegacyUnit } from '@ephox/mcagar';
+import { LegacyUnit } from '@ephox/wrap-mcagar';
 import DOMUtils from 'tinymce/core/api/dom/DOMUtils';
 import ScriptLoader from 'tinymce/core/api/dom/ScriptLoader';
 import Editor from 'tinymce/core/api/Editor';

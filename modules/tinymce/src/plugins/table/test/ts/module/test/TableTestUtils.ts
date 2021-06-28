@@ -1,7 +1,7 @@
 import { ApproxStructure, Assertions, Cursors, Mouse, StructAssert, UiFinder, Waiter } from '@ephox/agar';
 import { Arr, Obj } from '@ephox/katamari';
-import { TinyAssertions, TinyDom, TinyUiActions } from '@ephox/mcagar';
 import { Attribute, Checked, Class, Html, SelectorFilter, SelectorFind, SugarBody, SugarElement, Value } from '@ephox/sugar';
+import { TinyAssertions, TinyDom, TinyUiActions } from '@ephox/wrap-mcagar';
 import { assert } from 'chai';
 
 import Editor from 'tinymce/core/api/Editor';

@@ -1,5 +1,5 @@
 import { before, describe, it } from '@ephox/bedrock-client';
-import { LegacyUnit, TinyAssertions, TinyHooks } from '@ephox/mcagar';
+import { LegacyUnit, TinyAssertions, TinyHooks } from '@ephox/wrap-mcagar';
 import { assert } from 'chai';
 import fc from 'fast-check';
 

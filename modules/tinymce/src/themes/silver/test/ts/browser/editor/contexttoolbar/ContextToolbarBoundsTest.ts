@@ -1,7 +1,7 @@
 import { Bounds, Boxes } from '@ephox/alloy';
 import { after, before, context, describe, it } from '@ephox/bedrock-client';
-import { McEditor, TinyDom } from '@ephox/mcagar';
 import { Css, Scroll, SelectorFind, SugarBody, SugarElement } from '@ephox/sugar';
+import { McEditor, TinyDom } from '@ephox/wrap-mcagar';
 import { assert } from 'chai';
 
 import Editor from 'tinymce/core/api/Editor';
