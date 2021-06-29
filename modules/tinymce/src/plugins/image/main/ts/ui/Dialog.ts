@@ -60,7 +60,7 @@ const createState = (info: ImageDialogInfo) => ({
 const fromImageData = (image: ImageData): ImageDialogData => ({
   src: {
     value: image.src,
-    meta: { }
+    meta: {}
   },
   images: image.src,
   alt: image.alt,
@@ -112,7 +112,7 @@ const addPrependUrl2 = (info: ImageDialogInfo, srcURL: string): Optional<string>
 const addPrependUrl = (info: ImageDialogInfo, api: API) => {
   const data = api.getData();
   addPrependUrl2(info, data.src.value).each((srcURL) => {
-    api.setData({ src: { value: srcURL, meta: data.src.meta }});
+    api.setData({ src: { value: srcURL, meta: data.src.meta } });
   });
 };
 
@@ -189,7 +189,7 @@ const calculateImageSize = (helpers: Helpers, info: ImageDialogInfo, state: Imag
         // eslint-disable-next-line no-console
         .catch((e) => console.error(e));
     } else {
-      api.setData({ dimensions: { width: '', height: '' }});
+      api.setData({ dimensions: { width: '', height: '' } });
     }
   }
 };
@@ -286,7 +286,7 @@ const changeFileInput = (helpers: Helpers, info: ImageDialogInfo, state: ImageDi
       };
 
       const updateSrcAndSwitchTab = (url: string) => {
-        api.setData({ src: { value: url, meta: {}}});
+        api.setData({ src: { value: url, meta: {} } });
         api.showTab('general');
         changeSrc(helpers, info, state, api);
       };
@@ -342,9 +342,9 @@ const makeDialogBody = (info: ImageDialogInfo) => {
     const tabPanel: DialogType.TabPanelSpec = {
       type: 'tabpanel',
       tabs: Arr.flatten([
-        [ MainTab.makeTab(info) ],
-        info.hasAdvTab ? [ AdvTab.makeTab(info) ] : [],
-        info.hasUploadTab && (info.hasUploadUrl || info.hasUploadHandler) ? [ UploadTab.makeTab(info) ] : []
+        info.hasUploadTab && (info.hasUploadUrl || info.hasUploadHandler) ? [UploadTab.makeTab(info)] : [], [MainTab.makeTab(info)],
+        info.hasAdvTab ? [AdvTab.makeTab(info)] : []
+
       ])
     };
     return tabPanel;
@@ -402,7 +402,7 @@ const createBlobCache = (editor: Editor) => (file: File, blobUri: string, dataUr
   blobUri,
   name: file.name ? file.name.replace(/\.[^\.]+$/, '') : null,
   filename: file.name,
-  base64: dataUrl.split(',')[ 1 ]
+  base64: dataUrl.split(',')[1]
 });
 
 const addToBlobCache = (editor: Editor) => (blobInfo: BlobInfo) => {
@@ -419,7 +419,7 @@ const parseStyle = (editor: Editor) => (cssText: string): StyleMap => editor.dom
 
 const serializeStyle = (editor: Editor) => (stylesArg: StyleMap, name?: string): string => editor.dom.serializeStyle(stylesArg, name);
 
-const uploadImage = (editor: Editor) => (blobInfo: BlobInfo) => ImageUploader(editor).upload([ blobInfo ], false).then((results) => {
+const uploadImage = (editor: Editor) => (blobInfo: BlobInfo) => ImageUploader(editor).upload([blobInfo], false).then((results) => {
   if (results.length === 0) {
     return Promise.reject('Failed to upload image');
   } else if (results[0].status === false) {
